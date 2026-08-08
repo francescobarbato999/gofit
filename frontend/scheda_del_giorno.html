@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>GoFit</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Lunedì-Push</h1>
+    <div class="lista-esercizi">
+        <div class="esercizio"> 
+            <h2>Panca piana</h2>
+            <ul>
+                <li class="riga-serie">
+                    <span>Serie 1</span>
+                    <span>10 rep,60 kg</span>
+                </li>
+                <li class="riga-serie">
+                    <span>Serie 2</span>
+                    <span>10 rep,60 kg</span>
+                </li>
+            </ul>
+            <button class="btn btn-secondario">Aggiungi serie</button>
+            <div class="form-serie">
+                <input type="number" placeholder="Ripetizioni">
+                <input type="number" placeholder="Carico (kg)">
+                <button class="btn btn-conferma">Conferma</button>
+                <p class="errore"></p>
+            </div>
+        </div>
+        <div class="esercizio esercizio-non-attivo">
+            <h2>Chest press</h2>
+            <p class="no-serie">Nessuna serie registrata</p>
+            <button class="btn btn-secondario">Aggiungi serie</button>
+            <div class="form-serie">
+                <input type="number" placeholder="Ripetizioni">
+                <input type="number" placeholder="Carico (kg)">
+                <button class="btn btn-conferma">Conferma</button>
+                <p class="errore"></p>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primario">Esercizio successivo</button>
+<script src="script.js"></script>
+</body>
+</html>

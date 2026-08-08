@@ -1,0 +1,42 @@
+.esercizio {
+    border: 1px solid black;
+    padding: 10px;
+    background-color: whitesmoke;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+.btn
+{
+    border-radius: 8px;
+    padding: 5px;
+
+}
+.btn-secondario
+{
+    border: 1px solid gray;
+    background-color: gray;
+    color: black;
+}
+.btn-primario
+{
+    background-color: blue;
+    color: whitesmoke;
+    border: none;
+}
+.riga-serie
+{
+    display: flex;
+    justify-content: space-between;
+}
+.esercizio-non-attivo
+{
+    opacity: 0.5;
+}
+.form-serie
+{
+    display: none;
+}
+.errore
+{
+    color: red;
+}
