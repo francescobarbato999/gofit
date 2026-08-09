@@ -36,6 +36,10 @@
 {
     display: none;
 }
+.messaggio-fine
+{
+    display: none;
+}
 .errore
 {
     color: red;
