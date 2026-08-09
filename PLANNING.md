@@ -64,7 +64,7 @@ Typical flow (e.g., "add series"):
 - [x] Phase 1 — Planning (user story, data model, screens, architecture)
 - [x] Phase 2 — HTML structure of the "Card of the Day" screen
 - [x] Phase 3 — Basic JavaScript (interactivity without persistence)
-- [ ] Phase 4 — Flask Backend
-- [ ] Phase 5 — Frontend/Backend Connection (API)
+- [x] Phase 4 — Flask Backend
+- [x] Phase 5 — Frontend/Backend Connection (API)
 - [ ] Phase 6 — Database
 - [ ] Phase 7 — Refinement and Deployment
