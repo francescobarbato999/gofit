@@ -54,10 +54,22 @@ pulsantiConferma.forEach(function(pulsanteC)
         nuovaRiga.appendChild(spanDati);
         lista.appendChild(nuovaRiga);
         form_serie.style.display="none";
+        const nomeEsercizio=blocco.querySelector("h2").textContent;
+        fetch("http://127.0.0.1:5000/api/serie",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                esercizio:nomeEsercizio,
+                rep: inp[0].value,
+                carico: inp[1].value
+            }
+            )
+        });
     });
 });
 });
-
 function creaBloccoEsercizio(esercizio,index){
 const div=document.createElement("div");
 div.classList.add("esercizio");
