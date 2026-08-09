@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from models import db,Esericzio
+from models import db,Esercizio
 app=Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"]="sqlite:///gofit.db"
 db.init_app(app)
