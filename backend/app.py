@@ -1,23 +1,20 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from models import db,Esercizio
+from pymongo import MongoClient
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
 app=Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "gofit.db")
-db.init_app(app)
-
-with app.app_context():
-    db.create_all()
+client=MongoClient("mongodb://localhost:27017/")
+db=client["gofit"]
+esercizi_collection=db["esercizi"]
 CORS(app)
 
 
 
 @app.route("/api/esercizi")
 def get_esercizi():
-    esercizi_db=Esercizio.query.all()
-    esercizi = [{"nome":e.nome,"gruppo_muscolare":e.gruppo_muscolare} for e in esercizi_db]
+    esercizi_db=list(esercizi_collection.find())
+    esercizi = [{"nome":e["nome"],"gruppo_muscolare":e["gruppo_muscolare"]} for e in esercizi_db]
     return jsonify(esercizi)
 
 @app.route("/api/serie",methods=["POST"])

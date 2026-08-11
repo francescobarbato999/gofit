@@ -62,13 +62,11 @@ Typical flow (e.g., "add set"):
 
 ## Visual Reference / Future Developments
 
-Inspired by reference screenshots of a similar existing app (not part of the MVP, tracked here for later):
-
 - **Multiple plans available at once** (e.g., "Push", "Full Body", "Legs", "Pull"), selectable from a dedicated screen — extends the current single-active-plan assumption
 - **Post-workout summary**: a completed session card showing total duration and a compact list of exercises/sets performed (richer version of the History screen)
 - **Statistics section**: charts/trends on progress over time (explicitly out of scope for MVP, per earlier planning decision)
 - Considered and explicitly excluded for now: session start/end time and body weight tracking per session
-
+- **Offline first with sync**
 ---
 
 ## Progress
