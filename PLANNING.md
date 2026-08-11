@@ -15,19 +15,20 @@ Personal app for recording workouts, following a weekly plan, and viewing a hist
 Guiding Principle: Separate **planned** data (plan targets, always the same) from **real** data (what actually happened in a specific session).
 
 | Entity | Description | Main Fields |
-| `Exercise` | Exercise Catalog, always the same (e.g., "Benches") | id, name, muscle group |
-| `Workout` | General weekly program (e.g., "Strength Workout 2026") | id, name |
-| `Day` | A day in the workout (e.g., "Monday – Chest") | id, workout_id, day_name |
-| `PlannedExercise` | A target exercise within a day | id, day_id, exercise_id, target_set, target_rep |
-| `DailyWorkout` | An actual workout, on a specific date | id, workout_id, date |
-| `ExerciseDone` | An exercise actually done in a workout | id, workout_id, exercise_id |
-| `Set` | A single set performed (a weak part of `WorkoutDone`) | id, workout_id, number, reps, load |
+|---|---|---|
+| `Exercise` | Exercise catalog, always the same (e.g., "Bench press") | id, name, muscle_group |
+| `Plan` | General weekly program (e.g., "Strength Plan 2026") | id, name |
+| `Day` | A day in the plan (e.g., "Monday – Chest") | id, plan_id, day_name |
+| `PlannedExercise` | A target exercise within a day | id, day_id, exercise_id, target_sets, target_reps |
+| `DailyWorkout` | An actual workout session, on a specific date | id, plan_id, date |
+| `ExerciseDone` | An exercise actually performed in a session | id, workout_id, exercise_id |
+| `Set` | A single set performed (a weak entity of `ExerciseDone`) | id, exercise_done_id, number, reps, load, notes |
 
 **Key Relationships**:
-- A `Card` has multiple `Day`
+- A `Plan` has multiple `Day`
 - A `Day` has multiple `PlannedExercise`
-- A `DailyWorkout` follows a `Card` and has multiple `PerformedExercises`
-- A `PerformedExercise` has multiple `Sets` (added one at a time during the workout)
+- A `DailyWorkout` follows a `Plan` and has multiple `ExerciseDone`
+- An `ExerciseDone` has multiple `Set` (added one at a time during the workout)
 
 ---
 
@@ -35,8 +36,8 @@ Guiding Principle: Separate **planned** data (plan targets, always the same) fro
 
 ### 1. Daily Card (main screen)
 - List of exercises planned for the current day
-- For each exercise: name + list of sets already recorded in this session
-- Actions: **+ add sets** (inline form with reps and weight to be filled from scratch), **next exercise**
+- For each exercise: name + list of sets already recorded in this session (reps, load, notes)
+- Actions: **+ add set** (inline form with reps, weight, and notes to be filled from scratch), **next exercise**
 
 ### 2. History
 - List of past workouts, by date
@@ -48,23 +49,34 @@ Guiding Principle: Separate **planned** data (plan targets, always the same) fro
 
 - **Frontend** (HTML/CSS/JS): UI, collects input, updates the view
 - **Backend** (Flask): receives requests from the frontend, applies logic, reads/writes to the database
-- **Database**: persistent data persistence (without it, the data lives only in the browser's memory and is lost when closed)
+- **Database**: persistent data storage (without it, data lives only in the browser's memory and is lost when closed)
 
-Typical flow (e.g., "add series"):
-1. JS collects reps/loads from the inline form
+Typical flow (e.g., "add set"):
+1. JS collects reps/load/notes from the inline form
 2. JS sends an HTTP request to Flask with this data
-3. Flask saves the new `Series` to the database
+3. Flask saves the new `Set` to the database
 4. Flask responds to JS (confirmation/updated data)
-5. JS updates the list of series on the screen
+5. JS updates the list of sets on the screen
+
+---
+
+## Visual Reference / Future Developments
+
+Inspired by reference screenshots of a similar existing app (not part of the MVP, tracked here for later):
+
+- **Multiple plans available at once** (e.g., "Push", "Full Body", "Legs", "Pull"), selectable from a dedicated screen — extends the current single-active-plan assumption
+- **Post-workout summary**: a completed session card showing total duration and a compact list of exercises/sets performed (richer version of the History screen)
+- **Statistics section**: charts/trends on progress over time (explicitly out of scope for MVP, per earlier planning decision)
+- Considered and explicitly excluded for now: session start/end time and body weight tracking per session
 
 ---
 
 ## Progress
 
 - [x] Phase 1 — Planning (user story, data model, screens, architecture)
-- [x] Phase 2 — HTML structure of the "Card of the Day" screen
+- [x] Phase 2 — HTML structure of the "Daily Card" screen
 - [x] Phase 3 — Basic JavaScript (interactivity without persistence)
-- [x] Phase 4 — Flask Backend
-- [x] Phase 5 — Frontend/Backend Connection (API)
-- [ ] Phase 6 — Database
-- [ ] Phase 7 — Refinement and Deployment
+- [x] Phase 4 — Flask backend
+- [x] Phase 5 — Frontend/backend connection (API)
+- [ ] Phase 6 — Database (in progress: SQLAlchemy + SQLite set up, `Exercise` model created and connected to `GET /api/exercises`; `Set`, `ExerciseDone`, `DailyWorkout`, `Plan`, `Day`, `PlannedExercise` still to do)
+- [ ] Phase 7 — Refinement and deployment (candidate approach: local Debian laptop as server, accessed via Tailscale, for the university presentation)
