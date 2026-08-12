@@ -71,40 +71,40 @@ pulsantiConferma.forEach(function(pulsanteC)
 });
 });
 function creaBloccoEsercizio(esercizio,index){
-const div=document.createElement("div");
-div.classList.add("esercizio");
-if(index!=0)
-    div.classList.add("esercizio-non-attivo");
-const h2=document.createElement("h2");
-h2.textContent=esercizio.nome;
-const ul=document.createElement("ul");
-const button=document.createElement("button");
-button.textContent="Aggiungi serie";
-button.classList.add("btn","btn-secondario");
-const form=document.createElement("div");
-form.classList.add("form-serie");
-const inp1=document.createElement("input");
-inp1.type = "number";
-inp1.placeholder = "Ripetizioni";
-const inp2=document.createElement("input");
-inp2.type = "number";
-inp2.placeholder = "Carico (kg)";
-const button2=document.createElement("button");
-button2.textContent="Conferma";
-button2.classList.add("btn","btn-conferma");
-const err=document.createElement("p");
-err.classList.add("errore");
+    const div=document.createElement("div");
+    div.classList.add("esercizio");
+    if(index!=0)
+        div.classList.add("esercizio-non-attivo");
+    const h2=document.createElement("h2");
+    h2.textContent=esercizio.nome;
+    const ul=document.createElement("ul");
+    const button=document.createElement("button");
+    button.textContent="Aggiungi serie";
+    button.classList.add("btn","btn-secondario");
+    const form=document.createElement("div");
+    form.classList.add("form-serie");
+    const inp1=document.createElement("input");
+    inp1.type = "number";
+    inp1.placeholder = "Ripetizioni";
+    const inp2=document.createElement("input");
+    inp2.type = "number";
+    inp2.placeholder = "Carico (kg)";
+    const button2=document.createElement("button");
+    button2.textContent="Conferma";
+    button2.classList.add("btn","btn-conferma");
+    const err=document.createElement("p");
+    err.classList.add("errore");
 
-div.appendChild(h2);
-div.appendChild(ul);
-div.appendChild(button);
-div.appendChild(form);
-form.appendChild(inp1);
-form.appendChild(inp2);
-form.appendChild(button2);
-form.appendChild(err);
+    div.appendChild(h2);
+    div.appendChild(ul);
+    div.appendChild(button);
+    div.appendChild(form);
+    form.appendChild(inp1);
+    form.appendChild(inp2);
+    form.appendChild(button2);
+    form.appendChild(err);
 
-return div;
+    return div;
 }
 
 const pulsante=document.querySelector(".btn-primario");

@@ -76,5 +76,5 @@ Typical flow (e.g., "add set"):
 - [x] Phase 3 — Basic JavaScript (interactivity without persistence)
 - [x] Phase 4 — Flask backend
 - [x] Phase 5 — Frontend/backend connection (API)
-- [ ] Phase 6 — Database (in progress: SQLAlchemy + SQLite set up, `Exercise` model created and connected to `GET /api/exercises`; `Set`, `ExerciseDone`, `DailyWorkout`, `Plan`, `Day`, `PlannedExercise` still to do)
+- [x] Phase 6 — Database 
 - [ ] Phase 7 — Refinement and deployment (candidate approach: local Debian laptop as server, accessed via Tailscale, for the university presentation)
