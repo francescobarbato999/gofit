@@ -19,7 +19,7 @@ def get_esercizi():
     return jsonify(esercizi)
 
 @app.route("/api/serie",methods=["POST"])
-def aggiungi_serie():
+def post_serie():
     dati_ricevuti=request.get_json()
     oggi=str(date.today())
     nome_esercizio=dati_ricevuti["esercizio"]
@@ -55,10 +55,27 @@ def aggiungi_serie():
                     }
                 }}
                 )
-    
-
-        
     return jsonify({"messaggio":"Serie aggiunta"}),201
+
+schede_collection=db["schede"]
+@app.route("/api/schede",methods=["POST"])
+def post_schede():
+    scheda_ricevuta=request.get_json()
+    nome_scheda=scheda_ricevuta["nome"]
+    esercizi_pianificati=scheda_ricevuta["esercizi_pianificati"]
+    schede_collection.insert_one(
+        {
+            "nome":nome_scheda,
+            "esercizi_pianificati":esercizi_pianificati
+        }
+    )
+    return jsonify({"messaggio":"scheda aggiunta"}),201
+
+@app.route("/api/schede")
+def get_schede():
+    schede_db=list(schede_collection.find())
+    scheda=[{"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
+    return jsonify(scheda)
 
 def search_exercise(nome_esercizio,esercizi_svolti):
     for e in esercizi_svolti:
