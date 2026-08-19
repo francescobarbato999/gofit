@@ -1,10 +1,16 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request,session
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import date
 from werkzeug.security import generate_password_hash,check_password_hash
+from dotenv import load_dotenv
+import os
+from pathlib import Path
 
 app=Flask(__name__)
+env_path=Path(__file__).resolve().parent/".env"
+load_dotenv(env_path)
+app.config["SECRET_KEY"]=os.environ.get("SECRET_KEY")
 client=MongoClient("mongodb://localhost:27017/")
 db=client["gofit"]
 esercizi_collection=db["esercizi"]
@@ -23,22 +29,25 @@ def get_esercizi():
 
 @app.route("/api/serie",methods=["POST"])
 def post_serie():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
     dati_ricevuti=request.get_json()
     oggi=str(date.today())
     nome_esercizio=dati_ricevuti["esercizio"]
     rep_esercizio=dati_ricevuti["rep"]
     carico_esercizio=dati_ricevuti["carico"]
     esercizio_trovato=allenamenti_collection.find_one(
-        {"data":oggi,"esercizi_svolti.nome":nome_esercizio}
+        {"utente_id":utente_id,"data":oggi,"esercizi_svolti.nome":nome_esercizio}
     )
     allenamenti_collection.update_one(
-        {"data":oggi},
-        {"$setOnInsert":{"data":oggi,"esercizi_svolti":[]}},
+        {"utente_id":utente_id,"data":oggi},
+        {"$setOnInsert":{"utente_id":utente_id,"data":oggi,"esercizi_svolti":[]}},
         upsert=True
     )
     if(esercizio_trovato==None):
         allenamenti_collection.update_one(
-        {"data":oggi},
+        {"utente_id":utente_id,"data":oggi},
         {"$push":{
             "esercizi_svolti":{
                 "nome":nome_esercizio,
@@ -49,7 +58,7 @@ def post_serie():
     else:
         esercizi_svolti=esercizio_trovato["esercizi_svolti"]
         allenamenti_collection.update_one(
-                {"data":oggi,"esercizi_svolti.nome":nome_esercizio},
+                {"utente_id":utente_id,"data":oggi,"esercizi_svolti.nome":nome_esercizio},
                 {"$push":{
                     "esercizi_svolti.$.serie":{
                         "numero":search_exercise(nome_esercizio,esercizi_svolti),
@@ -62,11 +71,15 @@ def post_serie():
 
 @app.route("/api/schede",methods=["POST"])
 def post_schede():
+    if "utente_id" not in session:
+            return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
     scheda_ricevuta=request.get_json()
     nome_scheda=scheda_ricevuta["nome"]
     esercizi_pianificati=scheda_ricevuta["esercizi_pianificati"]
     schede_collection.insert_one(
         {
+            "utente_id":utente_id,
             "nome":nome_scheda,
             "esercizi_pianificati":esercizi_pianificati
         }
@@ -75,7 +88,10 @@ def post_schede():
 
 @app.route("/api/schede")
 def get_schede():
-    schede_db=list(schede_collection.find())
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
+    schede_db=list(schede_collection.find({"utente_id":utente_id}))
     scheda=[{"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
     return jsonify(scheda)
 
@@ -107,7 +123,12 @@ def login():
         return jsonify({"messaggio":"Errore"}),401
     if(check_password_hash(dati_cercati["password"],dati["password"])==False):
         return jsonify({"messaggio":"Errore"}),401
+    session["utente_id"]=str(dati_cercati["_id"])
     return jsonify({"messaggio":"Login OK"}),200
 
+@app.route("/api/logout",methods=["POST"])
+def logout():
+    session.pop("utente_id",None)
+    return jsonify({"messaggio":"Logout OK"}),200
 if __name__=="__main__":
     app.run(debug=True)
