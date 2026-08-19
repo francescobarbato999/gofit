@@ -2,12 +2,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import date
+from werkzeug.security import generate_password_hash,check_password_hash
 
 app=Flask(__name__)
 client=MongoClient("mongodb://localhost:27017/")
 db=client["gofit"]
 esercizi_collection=db["esercizi"]
 allenamenti_collection=db["allenamenti"]
+schede_collection=db["schede"]
+utenti_collection=db["utenti"]
 CORS(app)
 
 
@@ -57,7 +60,6 @@ def post_serie():
                 )
     return jsonify({"messaggio":"Serie aggiunta"}),201
 
-schede_collection=db["schede"]
 @app.route("/api/schede",methods=["POST"])
 def post_schede():
     scheda_ricevuta=request.get_json()
@@ -84,6 +86,28 @@ def search_exercise(nome_esercizio,esercizi_svolti):
             n=serie[-1]['numero']
             return n+1
                 
-                 
+@app.route("/api/registrazione",methods=["POST"])
+def registrazione():
+    dati=request.get_json()
+    email=dati["email"]
+    password=dati["password"]
+    dati_cercati=utenti_collection.find_one({"email":email})
+    if(dati_cercati!=None):
+        return jsonify({"messaggio":"Email presente nel sistema"}),409
+    hash_pass=generate_password_hash(password)
+    utenti_collection.insert_one({"email":email,"password":hash_pass})
+    return jsonify({"messaggio":"registrazione effettuata con successo"}),201
+
+@app.route("/api/login",methods=["POST"])
+def login():
+    dati=request.get_json()
+    email=dati["email"]
+    dati_cercati=utenti_collection.find_one({"email":email})
+    if(dati_cercati==None):
+        return jsonify({"messaggio":"Errore"}),401
+    if(check_password_hash(dati_cercati["password"],dati["password"])==False):
+        return jsonify({"messaggio":"Errore"}),401
+    return jsonify({"messaggio":"Login OK"}),200
+
 if __name__=="__main__":
     app.run(debug=True)
