@@ -1,0 +1,12 @@
+#form-login
+{
+    display: block;
+}
+#form-registrazione
+{
+    display: none;
+}
+.err
+{
+    display: none;
+}

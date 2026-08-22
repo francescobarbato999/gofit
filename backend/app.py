@@ -17,7 +17,7 @@ esercizi_collection=db["esercizi"]
 allenamenti_collection=db["allenamenti"]
 schede_collection=db["schede"]
 utenti_collection=db["utenti"]
-CORS(app)
+CORS(app,supports_credentials=True)
 
 
 
