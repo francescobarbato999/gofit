@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash,check_password_hash
 from dotenv import load_dotenv
 import os
 from pathlib import Path
+from bson import ObjectId
 
 app=Flask(__name__)
 env_path=Path(__file__).resolve().parent/".env"
@@ -92,8 +93,19 @@ def get_schede():
         return jsonify({"messaggio":"no login"}),401
     utente_id=session["utente_id"]
     schede_db=list(schede_collection.find({"utente_id":utente_id}))
-    scheda=[{"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
+    scheda=[{"id":str(s["_id"]),"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
     return jsonify(scheda)
+
+@app.route("/api/schede/<scheda_id>")
+def get_scheda_singola(scheda_id):
+    if "utente_id" not in session:
+            return jsonify({"messaggio":"no login"}),401
+    oid=ObjectId(scheda_id)
+    utente_id=session["utente_id"]
+    scheda_scelta=schede_collection.find_one({"_id":oid,"utente_id":utente_id})
+    scheda_ret={"id":str(scheda_scelta["_id"]),"nome":scheda_scelta["nome"],"esercizi_pianificati":scheda_scelta["esercizi_pianificati"]}
+    return jsonify(scheda_ret),200
+
 
 def search_exercise(nome_esercizio,esercizi_svolti):
     for e in esercizi_svolti:

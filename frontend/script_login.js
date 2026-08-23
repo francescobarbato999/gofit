@@ -38,7 +38,7 @@ login_button.addEventListener("click",function()
     }).then(function(risultato){
         if(risultato.ok)
         {
-            window.location.href="scheda_del_giorno.html";
+            window.location.href="programmi.html";
         }
         else
         {
@@ -67,7 +67,7 @@ reg_button.addEventListener("click",function()
     }).then(function(risultato){
         if(risultato.ok)
         {
-            window.location.href="scheda_del_giorno.html";
+            window.location.href="programmi.html";
         }
         else
         {
@@ -75,5 +75,5 @@ reg_button.addEventListener("click",function()
             err.textContent=risultato.dati.messaggio;
             err.style.display="block";
         }
-    })
+    });
 });

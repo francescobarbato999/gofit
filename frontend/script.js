@@ -1,15 +1,16 @@
 "use strict";
-fetch("http://127.0.0.1:5000/api/esercizi").then(function(risposta)
+const params=new URLSearchParams(window.location.search);
+const schedaId=params.get("scheda_id");
+fetch("http://127.0.0.1:5000/api/schede/"+schedaId,{credentials:"include"}).then(function(risposta)
 {
     return risposta.json();
 }).then(function(dati)
 {
     const contenitore=document.querySelector(".lista-esercizi");
-    dati.forEach(function(esercizio,index){
-        const blocco=creaBloccoEsercizio(esercizio,index);
+    dati["esercizi_pianificati"].forEach(function(esercizio){
+        const blocco=creaBloccoEsercizio(esercizio);
         contenitore.appendChild(blocco);
-        index++;
-    })
+    });
     const pulsantiSerie=document.querySelectorAll(".btn-secondario");
 pulsantiSerie.forEach(function(pulsanteS){
     pulsanteS.addEventListener("click",function()
@@ -58,6 +59,7 @@ pulsantiConferma.forEach(function(pulsanteC)
         const nomeEsercizio=blocco.querySelector("h2").textContent;
         fetch("http://127.0.0.1:5000/api/serie",{
             method:"POST",
+            credentials:"include",
             headers:{
                 "Content-Type":"application/json"
             },
@@ -67,17 +69,20 @@ pulsantiConferma.forEach(function(pulsanteC)
                 carico: inp[1].value
             }
             )
-        });
+        }).then(function(risposta)
+    {
+        console.log(risposta)
+    });
     });
 });
 });
-function creaBloccoEsercizio(esercizio,index){
+function creaBloccoEsercizio(esercizio){
     const div=document.createElement("div");
     div.classList.add("esercizio");
-    if(index!=0)
-        div.classList.add("esercizio-non-attivo");
     const h2=document.createElement("h2");
     h2.textContent=esercizio.nome;
+    const pp=document.createElement("p");
+    pp.textContent="Obiettivo: "+esercizio.target_rep.join(", ");
     const ul=document.createElement("ul");
     const button=document.createElement("button");
     button.textContent="Aggiungi serie";
@@ -97,6 +102,7 @@ function creaBloccoEsercizio(esercizio,index){
     err.classList.add("errore");
 
     div.appendChild(h2);
+    div.appendChild(pp)
     div.appendChild(ul);
     div.appendChild(button);
     div.appendChild(form);
@@ -111,23 +117,7 @@ function creaBloccoEsercizio(esercizio,index){
 const pulsante=document.querySelector(".btn-primario");
 pulsante.addEventListener("click",function()
 {
-    const esercizi=Array.from(document.querySelectorAll(".esercizio"));
-    let indice_attivo=esercizi.findIndex(function(es)
-    {
-        return !es.classList.contains("esercizio-non-attivo");
-    })
-    if(indice_attivo+1<esercizi.length)
-    {
-        esercizi[indice_attivo].classList.add("esercizio-non-attivo");
-        indice_attivo=indice_attivo+1;
-        esercizi[indice_attivo].classList.remove("esercizio-non-attivo");
-    }
-    else
-    {
-        esercizi[indice_attivo].classList.add("esercizio-non-attivo");
-        const mess=document.querySelector(".messaggio-fine");
-        mess.style.display="flex";
-    }
+    document.getElementById("messaggio-fine").style.display="flex";
 })
 
 

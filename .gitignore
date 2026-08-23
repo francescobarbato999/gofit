@@ -5,3 +5,4 @@ instance/
 *.db
 mongodata/
 backend/.env
+backend/debug_shell.py
