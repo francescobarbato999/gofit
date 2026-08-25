@@ -6,6 +6,8 @@ fetch("http://127.0.0.1:5000/api/schede/"+schedaId,{credentials:"include"}).then
     return risposta.json();
 }).then(function(dati)
 {
+    const name=document.getElementById("program");
+    name.textContent=dati["nome"];
     const contenitore=document.querySelector(".lista-esercizi");
     dati["esercizi_pianificati"].forEach(function(esercizio){
         const blocco=creaBloccoEsercizio(esercizio);
@@ -118,7 +120,8 @@ const pulsante=document.querySelector(".btn-primario");
 pulsante.addEventListener("click",function()
 {
     document.getElementById("messaggio-fine").style.display="flex";
-    window.location.href="programmi.html";
+    setTimeout(()=>window.location.href="programmi.html",3000);
+    
 })
 
 

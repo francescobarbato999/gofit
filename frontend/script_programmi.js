@@ -39,19 +39,24 @@ btnNuovaScheda.addEventListener("click",function(){
     btnNuovaScheda.disabled=true;
     const formNuovaScheda=document.createElement("div");
     btnNuovaScheda.parentNode.insertBefore(formNuovaScheda,btnNuovaScheda);
+    formNuovaScheda.classList.add("card");
     const inputScheda=document.createElement("input");
     inputScheda.setAttribute("type","text");
     inputScheda.setAttribute("placeholder","nome scheda");
+    inputScheda.classList.add("input-scheda");
     formNuovaScheda.appendChild(inputScheda);
     const divEsercizi=document.createElement("div");
     formNuovaScheda.appendChild(divEsercizi);
     const btnNuovoEsercizio=document.createElement("button");
+    btnNuovoEsercizio.classList.add("btn","btn-primario");
     btnNuovoEsercizio.textContent="+Aggiungi esercizio";
     formNuovaScheda.appendChild(btnNuovoEsercizio);
     const salva=document.createElement("button");
+    salva.classList.add("btn","btn-conferma");
     salva.textContent="+Salva";
     formNuovaScheda.appendChild(salva);
     const annulla=document.createElement("button");
+    annulla.classList.add("btn","btn-secondario");
     annulla.textContent="-Annulla";
     formNuovaScheda.appendChild(annulla);
     btnNuovoEsercizio.addEventListener("click",function()
@@ -61,7 +66,9 @@ btnNuovaScheda.addEventListener("click",function(){
         annulla.disabled=true;
         let repTemp=[];
         const divAggEser=document.createElement("div");
+        divAggEser.classList.add("card");
         const selectEser=document.createElement("select");
+        selectEser.classList.add("input-scheda");
         catalogo.forEach(function(esercizio){
             const opz=document.createElement("option");
             opz.value=esercizio.nome;
@@ -70,12 +77,14 @@ btnNuovaScheda.addEventListener("click",function(){
         });
         divAggEser.appendChild(selectEser);
         const inpNumRep=document.createElement("input");
+        inpNumRep.classList.add("input-scheda");
         inpNumRep.setAttribute("type","number");
         inpNumRep.setAttribute("placeholder","numero ripetizioni");
         divAggEser.appendChild(inpNumRep);
         const listaRep=document.createElement("ul");
         divAggEser.appendChild(listaRep);
         const btnAggRep=document.createElement("button");
+        btnAggRep.classList.add("btn","btn-primario");
         btnAggRep.textContent="+Aggiungi rep";
         btnAggRep.addEventListener("click",function(){
             let repVal=inpNumRep.value;
@@ -87,21 +96,21 @@ btnNuovaScheda.addEventListener("click",function(){
             repTemp.push(Number(repVal));
             inpNumRep.value=0;
         });
-        divAggEser.appendChild(btnAggRep);
         const annullaNuovoEse=document.createElement("button");
-        annullaNuovoEse.textContent="Annulla esercizio";
+        annullaNuovoEse.classList.add("btn","btn-secondario");
+        annullaNuovoEse.textContent="-Annulla esercizio";
         annullaNuovoEse.addEventListener("click",function(){
             divAggEser.remove();
             btnNuovoEsercizio.disabled=false;
             salva.disabled=false;
             annulla.disabled=false;
         });
-        divAggEser.appendChild(annullaNuovoEse);
         const salvaNuovoEse=document.createElement("button");
-        salvaNuovoEse.textContent="Salva esercizio";
+        salvaNuovoEse.classList.add("btn","btn-conferma");
+        salvaNuovoEse.textContent="+Salva esercizio";
         const errNuovoEse=document.createElement("p");
         errNuovoEse.classList.add("errore");
-        divAggEser.appendChild(errNuovoEse);
+        
         salvaNuovoEse.addEventListener("click",function(){
             if(selectEser.value=="" || repTemp.length===0)
             {
@@ -129,7 +138,10 @@ btnNuovaScheda.addEventListener("click",function(){
             salva.disabled=false;
             annulla.disabled=false;
         });
+        divAggEser.appendChild(btnAggRep);
         divAggEser.appendChild(salvaNuovoEse);
+        divAggEser.appendChild(annullaNuovoEse);
+        divAggEser.appendChild(errNuovoEse);
         divEsercizi.appendChild(divAggEser);
     });
     annulla.addEventListener("click",function(){

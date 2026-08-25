@@ -1,12 +1,79 @@
-#form-login
-{
-    display: block;
+:root {
+    --colore-ghisa: #14181C;
+    --colore-acciaio: #1D2329;
+    --colore-gesso: #F1EFE9;
+    --colore-nebbia: #838C94;
+    --colore-rosso-disco: #D62828;
+    --colore-verde-disco: #2E8B57;
+    --font-titoli: "Big Shoulders", sans-serif;
+    --font-corpo: "Inter", sans-serif;
+    --font-numeri: "IBM Plex Mono", monospace;
 }
-#form-registrazione
-{
+
+body {
+    background-color: var(--colore-ghisa);
+    color: var(--colore-gesso);
+    font-family: var(--font-corpo);
+    margin: 0;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+#form-login, #form-registrazione {
+    background-color: var(--colore-acciaio);
+    padding: 1.5rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+#form-registrazione {
     display: none;
 }
-.err
-{
+
+input {
+    background-color: var(--colore-ghisa);
+    border: 1px solid var(--colore-nebbia);
+    color: var(--colore-gesso);
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-family: var(--font-corpo);
+    font-size: 1rem;
+}
+
+button {
+    background-color: var(--colore-rosso-disco);
+    color: var(--colore-gesso);
+    border: none;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-family: var(--font-corpo);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#switch {
+    background-color: transparent;
+    border: 1px solid var(--colore-nebbia);
+    color: var(--colore-gesso);
+    margin-top: 0.5rem;
+}
+
+#switch_label {
+    text-align: center;
+    color: var(--colore-nebbia);
+    font-size: 0.9rem;
+}
+
+.err {
     display: none;
+    color: var(--colore-rosso-disco);
+    font-size: 0.9rem;
+    margin: 0;
 }
