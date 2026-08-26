@@ -1,5 +1,6 @@
 "use strict";
-fetch("http://127.0.0.1:5000/api/schede",{
+const API_URL="http://127.0.0.1:5000";
+fetch(API_URL+"/api/schede",{
     method:"GET",
     credentials:"include"
 }).then(function(risposta)
@@ -14,6 +15,7 @@ fetch("http://127.0.0.1:5000/api/schede",{
             const schede_div=document.getElementById("lista-schede");
             risultato.dati.forEach(element => {
                 const ex=document.createElement("div");
+                ex.classList.add("riga-elenco");
                 ex.textContent=element["nome"];
                 ex.style.cursor="pointer";
                 ex.addEventListener("click",()=>window.location.href="scheda_del_giorno.html?scheda_id="+element["id"]);
@@ -31,7 +33,7 @@ btnNuovaScheda.addEventListener("click",function(){
     console.log("click");
     let nuovaScheda={nome:"",esercizi_pianificati:[]};
     let catalogo=[];
-    fetch("http://127.0.0.1:5000/api/esercizi",{credentials:"include"}).then(function(risposta){
+    fetch(API_URL+"/api/esercizi",{credentials:"include"}).then(function(risposta){
         return risposta.json();
     }).then(function(dati){
         catalogo=dati;
@@ -159,7 +161,7 @@ btnNuovaScheda.addEventListener("click",function(){
         }
         errNuovaScheda.textContent="";
         nuovaScheda.nome=inputScheda.value;
-        fetch("http://127.0.0.1:5000/api/schede",{
+        fetch(API_URL+"/api/schede",{
             method:"POST",
             credentials:"include",
             headers:{

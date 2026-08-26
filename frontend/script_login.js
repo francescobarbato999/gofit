@@ -1,4 +1,5 @@
 "use strict";
+const API_URL="http://127.0.0.1:5000";
 const switch_button=document.getElementById("switch");
 switch_button.addEventListener("click",function()
 {
@@ -25,7 +26,7 @@ login_button.addEventListener("click",function()
 {
     const email_doc=document.getElementById("email-login").value;
     const pass_doc=document.getElementById("password-login").value;
-    fetch("http://127.0.0.1:5000/api/login",{
+    fetch(API_URL+"/api/login",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         credentials:"include",
@@ -54,7 +55,7 @@ reg_button.addEventListener("click",function()
 {
     const email_doc=document.getElementById("email-registrazione").value;
     const pass_doc=document.getElementById("password-registrazione").value;
-    fetch("http://127.0.0.1:5000/api/registrazione",{
+    fetch(API_URL+"/api/registrazione",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         credentials:"include",

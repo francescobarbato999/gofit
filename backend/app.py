@@ -142,5 +142,39 @@ def login():
 def logout():
     session.pop("utente_id",None)
     return jsonify({"messaggio":"Logout OK"}),200
+
+@app.route("/api/allenamenti/nota",methods=["POST"])
+def post_nota():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
+    dati_ricevuti=request.get_json()
+    nota=dati_ricevuti["nota"]
+    oggi=str(date.today())
+    allenamenti_collection.update_one(
+        {"utente_id":utente_id,"data":oggi},
+        {"$set":{"nota":nota},"$setOnInsert":{"utente_id":utente_id,"data":oggi,"esercizi_svolti":[]}},
+        upsert=True
+        )
+    return jsonify({"messaggio":"Nota salvata"}),200
+
+@app.route("/api/allenamenti")
+def get_allenamenti():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
+    allenamenti_db=allenamenti_collection.find({"utente_id":utente_id})
+    allenamenti=[{"id":str(a["_id"]),"data":a["data"]} for a in allenamenti_db]
+    return jsonify(allenamenti)
+
+@app.route("/api/allenamenti/<allenamento_id>")
+def get_allenamento_singolo(allenamento_id):
+    if "utente_id" not in session:
+            return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
+    oid=ObjectId(allenamento_id)
+    allenamento_scelto=allenamenti_collection.find_one({"utente_id":utente_id,"_id":oid})
+    allenamento_ret={"id":str(allenamento_scelto["_id"]),"data":allenamento_scelto["data"],"esercizi_svolti":allenamento_scelto["esercizi_svolti"],"nota":allenamento_scelto.get("nota","")}
+    return jsonify(allenamento_ret),200
 if __name__=="__main__":
     app.run(debug=True)

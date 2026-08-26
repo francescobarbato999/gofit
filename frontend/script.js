@@ -1,7 +1,8 @@
 "use strict";
+const API_URL="http://127.0.0.1:5000";
 const params=new URLSearchParams(window.location.search);
 const schedaId=params.get("scheda_id");
-fetch("http://127.0.0.1:5000/api/schede/"+schedaId,{credentials:"include"}).then(function(risposta)
+fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(risposta)
 {
     return risposta.json();
 }).then(function(dati)
@@ -59,7 +60,7 @@ fetch("http://127.0.0.1:5000/api/schede/"+schedaId,{credentials:"include"}).then
             lista.appendChild(nuovaRiga);
             form_serie.style.display="none";
             const nomeEsercizio=blocco.querySelector("h2").textContent;
-            fetch("http://127.0.0.1:5000/api/serie",{
+            fetch(API_URL+"/api/serie",{
                 method:"POST",
                 credentials:"include",
                 headers:{
