@@ -46,7 +46,7 @@ def post_serie():
         {"$setOnInsert":{"utente_id":utente_id,"data":oggi,"esercizi_svolti":[]}},
         upsert=True
     )
-    if(esercizio_trovato==None):
+    if(esercizio_trovato is None):
         allenamenti_collection.update_one(
         {"utente_id":utente_id,"data":oggi},
         {"$push":{
@@ -120,7 +120,7 @@ def registrazione():
     email=dati["email"]
     password=dati["password"]
     dati_cercati=utenti_collection.find_one({"email":email})
-    if(dati_cercati!=None):
+    if(dati_cercati is not None):
         return jsonify({"messaggio":"Email presente nel sistema"}),409
     hash_pass=generate_password_hash(password)
     utenti_collection.insert_one({"email":email,"password":hash_pass})
@@ -131,7 +131,7 @@ def login():
     dati=request.get_json()
     email=dati["email"]
     dati_cercati=utenti_collection.find_one({"email":email})
-    if(dati_cercati==None):
+    if(dati_cercati is None):
         return jsonify({"messaggio":"Errore"}),401
     if(check_password_hash(dati_cercati["password"],dati["password"])==False):
         return jsonify({"messaggio":"Errore"}),401
