@@ -16,6 +16,7 @@ body
     color:var(--colore-gesso);
     font-family: var(--font-corpo);
     margin: 0;
+    padding-bottom: 4rem;
 }
 
 h1,h2,h3
@@ -114,4 +115,32 @@ h1,h2,h3
     color: var(--colore-rosso-disco);
     font-family: var(--font-corpo);
     font-size: 0.9rem;
+}
+
+.bottom-nav
+{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    background-color: var(--colore-acciaio);
+    border-top: 1px solid var(--colore-nebbia);
+}
+
+.nav-link
+{
+    flex:1;
+    text-align: center;
+    color: var(--colore-nebbia);
+    padding: 0.9rem 0;
+    text-decoration: none;
+    font-family: var(--font-corpo);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.nav-link.active
+{
+    color: var(--colore-rosso-disco);
 }

@@ -116,8 +116,14 @@ function creaBloccoEsercizio(esercizio){
 
     return div;
 }
-
-const pulsante=document.querySelector(".btn-primario");
+fetch(API_URL+"/api/allenamenti/oggi",{credentials:"include"}).then(function(risposta){
+    return risposta.json();
+}).then(function(dati){
+    
+    const notaInp=document.getElementById("nota-input");
+    notaInp.value=dati["nota"];
+});
+const pulsante=document.getElementById("fine");
 pulsante.addEventListener("click",function()
 {
     document.getElementById("messaggio-fine").style.display="flex";
@@ -125,5 +131,17 @@ pulsante.addEventListener("click",function()
     
 })
 
-
+const btnSalvaNota=document.getElementById("btn-salva-nota");
+btnSalvaNota.addEventListener("click",function(){
+    const notaInput=document.getElementById("nota-input");
+    fetch(API_URL+"/api/allenamenti/nota",
+        {method:"POST",
+        credentials:"include",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({nota:notaInput.value})
+    }
+    ).then(function(risposta){
+        console.log(risposta);
+    });
+});
 

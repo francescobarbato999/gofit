@@ -28,6 +28,12 @@ def get_esercizi():
     esercizi = [{"nome":e["nome"],"gruppo_muscolare":e["gruppo_muscolare"]} for e in esercizi_db]
     return jsonify(esercizi)
 
+def search_exercise(nome_esercizio,esercizi_svolti):
+    for e in esercizi_svolti:
+        if(e["nome"]==nome_esercizio):
+            serie=e["serie"]
+            n=serie[-1]['numero']
+            return n+1
 @app.route("/api/serie",methods=["POST"])
 def post_serie():
     if "utente_id" not in session:
@@ -107,12 +113,6 @@ def get_scheda_singola(scheda_id):
     return jsonify(scheda_ret),200
 
 
-def search_exercise(nome_esercizio,esercizi_svolti):
-    for e in esercizi_svolti:
-        if(e["nome"]==nome_esercizio):
-            serie=e["serie"]
-            n=serie[-1]['numero']
-            return n+1
                 
 @app.route("/api/registrazione",methods=["POST"])
 def registrazione():
@@ -176,5 +176,77 @@ def get_allenamento_singolo(allenamento_id):
     allenamento_scelto=allenamenti_collection.find_one({"utente_id":utente_id,"_id":oid})
     allenamento_ret={"id":str(allenamento_scelto["_id"]),"data":allenamento_scelto["data"],"esercizi_svolti":allenamento_scelto["esercizi_svolti"],"nota":allenamento_scelto.get("nota","")}
     return jsonify(allenamento_ret),200
+
+@app.route("/api/allenamenti/oggi")
+def get_allenamento_odierno():
+    if "utente_id" not in session:
+            return jsonify({"messaggio":"no login"}),401
+    utente_id=session["utente_id"]
+    oggi=str(date.today())
+    allenamento_scelto=allenamenti_collection.find_one({"utente_id":utente_id,"data":oggi})
+    if allenamento_scelto is None:
+         return jsonify({"nota":"","scheda_id":None,"esercizi_svolti":[]}),200
+    allenamento_ret={"id":str(allenamento_scelto["_id"]),"data":allenamento_scelto["data"],"esercizi_svolti":allenamento_scelto["esercizi_svolti"],"nota":allenamento_scelto.get("nota",""),
+    "scheda_id":allenamento_scelto.get("scheda_id")}
+    return jsonify(allenamento_ret),200
+
+@app.route("/api/allenamenti/scheda",methods=["POST"])
+def post_scheda_oggi():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"No login"}),400
+    utente_id=session["utente_id"]
+    dati_ricevuti=request.get_json()
+    scheda_id=dati_ricevuti.get("scheda_id")
+    forza=dati_ricevuti.get("forza",False)
+    oggi=str(date.today())
+    allenamento_esistente=allenamenti_collection.find_one({"utente_id":utente_id,"data":oggi})
+    if allenamento_esistente is not None:
+        scheda_attuale=allenamento_esistente.get("scheda_id")
+        if scheda_attuale!=scheda_id and not forza:
+            return jsonify({"messaggio":"conflitto","scheda_id_attuale":scheda_attuale}),409
+    allenamenti_collection.update_one(
+        {"utente_id":utente_id,"data":oggi},
+        {"$set":{"scheda_id":scheda_id},
+        "$setOnInsert":{"utente_id":utente_id,"data":oggi,"esercizi_svolti":[]}
+        },
+        upsert=True
+    )
+    return jsonify({"messaggio":"Scheda impostata"}),200
+
+def trova_serie_svolte(nome_es,es_svolti):
+    for e in es_svolti:
+        if e["nome"]==nome_es:
+            return e["serie"]
+    return []
+
+@app.route("/api/allenamenti/oggi/completo")
+def get_allenamento_odierno_completo():
+    if "utente_id" not in session:
+          return jsonify({"messaggio":"No login"}),401
+    utente_id=session["utente_id"]
+    oggi=str(date.today())
+    allenamento=allenamenti_collection.find_one({"utente_id":utente_id,"data":oggi})
+    scheda_id=allenamento.get("scheda_id") if allenamento else None
+    esercizi_svolti=allenamento.get("esercizi_svolti",[]) if allenamento else []
+    nota=allenamento.get("nota","") if allenamento else ""
+    if scheda_id is not None:
+        scheda_trovata=schede_collection.find_one({"_id":ObjectId(scheda_id)})
+    else:
+         scheda_trovata=None
+    if scheda_trovata is not None:
+        esercizi_base=scheda_trovata["esercizi_pianificati"]
+        nome_scheda=scheda_trovata["nome"]
+    else:
+        esercizi_base=list(esercizi_collection.find())
+        nome_scheda="Allenamento libero"
+    esercizi_uniti=[]
+    for esercizio in esercizi_base:
+        esercizi_uniti.append({
+            "nome":esercizio["nome"],
+            "target_rep":esercizio.get("target_rep"),
+            "serie":trova_serie_svolte(esercizio["nome"],esercizi_svolti)
+        })
+    return jsonify({"nome":nome_scheda,"nota":nota,"esercizi":esercizi_uniti})
+
 if __name__=="__main__":
     app.run(debug=True)
