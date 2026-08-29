@@ -1,5 +1,42 @@
 "use strict";
 const API_URL="http://127.0.0.1:5000";
+function selezioneScheda(schedaId){
+    fetch(API_URL+"/api/allenamenti/scheda",{
+        method:"POST",
+        credentials:"include",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({scheda_id:schedaId})
+    }).then(function(risposta){
+        return risposta.json().then(function(dati){
+            return {ok:risposta.ok,dati:dati};
+        });
+    }).then(function(risultato){
+        if(risultato.ok)
+            window.location.href="scheda_del_giorno.html"
+        else
+        {
+            const conferma=confirm("Hai già una scheda in corso. Vuoi sostituirla?");
+            if(conferma==true)
+            {
+                fetch(API_URL+"/api/allenamenti/scheda",{
+                    method:"POST",
+                    credentials:"include",
+                    headers:{"Content-Type":"application/json"},
+                    body:JSON.stringify({scheda_id:schedaId,forza:true})
+                }).then(function(risposta){
+                    return risposta.json().then(function(dati){
+                            return {ok:risposta.ok,dati:dati};
+                        });
+                }).then(function(risultato){
+                    if(risultato.ok)
+                        window.location.href="scheda_del_giorno.html"
+                    else
+                        console.log("Generic error");
+                })
+            }
+        }
+    })
+}
 fetch(API_URL+"/api/schede",{
     method:"GET",
     credentials:"include"
@@ -18,7 +55,7 @@ fetch(API_URL+"/api/schede",{
                 ex.classList.add("riga-elenco");
                 ex.textContent=element["nome"];
                 ex.style.cursor="pointer";
-                ex.addEventListener("click",()=>window.location.href="scheda_del_giorno.html?scheda_id="+element["id"]);
+                ex.addEventListener("click",()=>selezioneScheda(element["id"]));
                 schede_div.appendChild(ex);
             });
         }

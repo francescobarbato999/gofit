@@ -1,29 +1,64 @@
 "use strict";
 const API_URL="http://127.0.0.1:5000";
-const params=new URLSearchParams(window.location.search);
-const schedaId=params.get("scheda_id");
-fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(risposta)
-{
-    return risposta.json();
-}).then(function(dati)
-{
-    const name=document.getElementById("program");
-    name.textContent=dati["nome"];
-    const contenitore=document.querySelector(".lista-esercizi");
-    dati["esercizi_pianificati"].forEach(function(esercizio){
-        const blocco=creaBloccoEsercizio(esercizio);
-        contenitore.appendChild(blocco);
+function creaBloccoEsercizio(esercizio){
+    const div=document.createElement("div");
+    div.classList.add("esercizio");
+    const h2=document.createElement("h2");
+    h2.textContent=esercizio.nome;
+    const pp=document.createElement("p");
+    pp.textContent="Obiettivo: "+esercizio.target_rep.join(", ");
+    const ul=document.createElement("ul");
+    esercizio.serie.forEach(function(e){
+        const nuovaRiga=document.createElement("li");
+        nuovaRiga.classList.add("riga-serie");
+        const spanSerie=document.createElement("span");
+        const spanRep=document.createElement("span");
+        spanSerie.textContent="Serie: "+e.numero;
+        spanRep.textContent=e.rep+" rep, "+e.carico+" kg";
+        nuovaRiga.appendChild(spanSerie);
+        nuovaRiga.appendChild(spanRep);
+        ul.appendChild(nuovaRiga);
     });
+    const button=document.createElement("button");
+    button.textContent="Aggiungi serie";
+    button.classList.add("btn","btn-secondario");
+    const form=document.createElement("div");
+    form.classList.add("form-serie");
+    const inp1=document.createElement("input");
+    inp1.type = "number";
+    inp1.placeholder = "Ripetizioni";
+    const inp2=document.createElement("input");
+    inp2.type = "number";
+    inp2.placeholder = "Carico (kg)";
+    const button2=document.createElement("button");
+    button2.textContent="Conferma";
+    button2.classList.add("btn","btn-conferma");
+    const err=document.createElement("p");
+    err.classList.add("errore");
+
+    div.appendChild(h2);
+    div.appendChild(pp)
+    div.appendChild(ul);
+    div.appendChild(button);
+    div.appendChild(form);
+    form.appendChild(inp1);
+    form.appendChild(inp2);
+    form.appendChild(button2);
+    form.appendChild(err);
+
+    return div;
+}
+
+function callListeners(){
     const pulsantiSerie=document.querySelectorAll(".btn-secondario");
     pulsantiSerie.forEach(function(pulsanteS){
-    pulsanteS.addEventListener("click",function()
-    {
-        const blocco=pulsanteS.closest(".esercizio");
-        const form_serie=blocco.querySelector(".form-serie");
-        form_serie.style.display="flex";
-    });
-    });
-
+        pulsanteS.addEventListener("click",function()
+        {
+            const blocco=pulsanteS.closest(".esercizio");
+            const form_serie=blocco.querySelector(".form-serie");
+            form_serie.style.display="flex";
+        });
+        });
     const pulsantiConferma=document.querySelectorAll(".btn-conferma");
     pulsantiConferma.forEach(function(pulsanteC)
     {
@@ -44,7 +79,7 @@ fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(ris
             const nuovaRiga=document.createElement("li");
             nuovaRiga.classList.add("riga-serie");
             const spanNumero=document.createElement("span");
-            spanNumero.textContent="Serie "+numeroSerie;
+            spanNumero.textContent="Serie: "+numeroSerie;
             const spanDati=document.createElement("span");
             const err=form_serie.querySelector(".errore");
             if(inp[0].value===""||inp[1].value===""||inp[0].value==="0")
@@ -78,44 +113,24 @@ fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(ris
         });
         });
     });
-});
-function creaBloccoEsercizio(esercizio){
-    const div=document.createElement("div");
-    div.classList.add("esercizio");
-    const h2=document.createElement("h2");
-    h2.textContent=esercizio.nome;
-    const pp=document.createElement("p");
-    pp.textContent="Obiettivo: "+esercizio.target_rep.join(", ");
-    const ul=document.createElement("ul");
-    const button=document.createElement("button");
-    button.textContent="Aggiungi serie";
-    button.classList.add("btn","btn-secondario");
-    const form=document.createElement("div");
-    form.classList.add("form-serie");
-    const inp1=document.createElement("input");
-    inp1.type = "number";
-    inp1.placeholder = "Ripetizioni";
-    const inp2=document.createElement("input");
-    inp2.type = "number";
-    inp2.placeholder = "Carico (kg)";
-    const button2=document.createElement("button");
-    button2.textContent="Conferma";
-    button2.classList.add("btn","btn-conferma");
-    const err=document.createElement("p");
-    err.classList.add("errore");
-
-    div.appendChild(h2);
-    div.appendChild(pp)
-    div.appendChild(ul);
-    div.appendChild(button);
-    div.appendChild(form);
-    form.appendChild(inp1);
-    form.appendChild(inp2);
-    form.appendChild(button2);
-    form.appendChild(err);
-
-    return div;
 }
+
+
+fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(function(risposta)
+{
+    return risposta.json();
+}).then(function(dati)
+{
+    const name=document.getElementById("program");
+    name.textContent=dati["nome"];
+    const contenitore=document.querySelector(".lista-esercizi");
+    dati["esercizi"].forEach(function(esercizio){
+        const blocco=creaBloccoEsercizio(esercizio);
+        contenitore.appendChild(blocco);
+    });
+    callListeners();
+});
+
 fetch(API_URL+"/api/allenamenti/oggi",{credentials:"include"}).then(function(risposta){
     return risposta.json();
 }).then(function(dati){

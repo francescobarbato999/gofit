@@ -102,6 +102,7 @@ def get_schede():
     scheda=[{"id":str(s["_id"]),"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
     return jsonify(scheda)
 
+#due to changes this is dead code. Could it be useful in the future??
 @app.route("/api/schede/<scheda_id>")
 def get_scheda_singola(scheda_id):
     if "utente_id" not in session:
