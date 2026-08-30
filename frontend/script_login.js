@@ -24,13 +24,13 @@ switch_button.addEventListener("click",function()
 const login_button=document.getElementById("btn-login");
 login_button.addEventListener("click",function()
 {
-    const email_doc=document.getElementById("email-login").value;
+    const username_doc=document.getElementById("username-login").value;
     const pass_doc=document.getElementById("password-login").value;
     fetch(API_URL+"/api/login",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         credentials:"include",
-        body:JSON.stringify({email:email_doc,password:pass_doc}),
+        body:JSON.stringify({username:username_doc,password:pass_doc}),
         
     }).then(function(risposta){
         return risposta.json().then(function(dati){
@@ -53,13 +53,13 @@ login_button.addEventListener("click",function()
 const reg_button=document.getElementById("btn-registrazione");
 reg_button.addEventListener("click",function()
 {
-    const email_doc=document.getElementById("email-registrazione").value;
+    const username_doc=document.getElementById("username-registrazione").value;
     const pass_doc=document.getElementById("password-registrazione").value;
     fetch(API_URL+"/api/registrazione",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         credentials:"include",
-        body:JSON.stringify({email:email_doc,password:pass_doc}),
+        body:JSON.stringify({username:username_doc,password:pass_doc}),
         
     }).then(function(risposta){
         return risposta.json().then(function(dati){

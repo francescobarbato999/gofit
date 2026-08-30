@@ -118,20 +118,20 @@ def get_scheda_singola(scheda_id):
 @app.route("/api/registrazione",methods=["POST"])
 def registrazione():
     dati=request.get_json()
-    email=dati["email"]
+    username=dati["username"]
     password=dati["password"]
-    dati_cercati=utenti_collection.find_one({"email":email})
+    dati_cercati=utenti_collection.find_one({"username":username})
     if(dati_cercati is not None):
-        return jsonify({"messaggio":"Email presente nel sistema"}),409
+        return jsonify({"messaggio":"Username presente nel sistema"}),409
     hash_pass=generate_password_hash(password)
-    utenti_collection.insert_one({"email":email,"password":hash_pass})
+    utenti_collection.insert_one({"username":username,"password":hash_pass})
     return jsonify({"messaggio":"registrazione effettuata con successo"}),201
 
 @app.route("/api/login",methods=["POST"])
 def login():
     dati=request.get_json()
-    email=dati["email"]
-    dati_cercati=utenti_collection.find_one({"email":email})
+    username=dati["username"]
+    dati_cercati=utenti_collection.find_one({"username":username})
     if(dati_cercati is None):
         return jsonify({"messaggio":"Errore"}),401
     if(check_password_hash(dati_cercati["password"],dati["password"])==False):
