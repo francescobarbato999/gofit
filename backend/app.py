@@ -250,4 +250,4 @@ def get_allenamento_odierno_completo():
     return jsonify({"nome":nome_scheda,"nota":nota,"esercizi":esercizi_uniti})
 
 if __name__=="__main__":
-    app.run(debug=True)
+    app.run(debug=True,host="0.0.0.0")

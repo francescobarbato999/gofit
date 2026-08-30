@@ -1,5 +1,5 @@
 "use strict";
-const API_URL="http://192.168.1.38:5000";
+const API_URL = "http://" + window.location.hostname + ":5000";
 const switch_button=document.getElementById("switch");
 switch_button.addEventListener("click",function()
 {

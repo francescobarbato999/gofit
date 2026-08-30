@@ -1,5 +1,5 @@
 "use strict";
-const API_URL="http://192.168.1.38:5000";
+const API_URL = "http://" + window.location.hostname + ":5000";
 function creaBloccoEsercizio(esercizio){
     const div=document.createElement("div");
     div.classList.add("esercizio");

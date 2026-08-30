@@ -1,5 +1,5 @@
 "use strict";
-const API_URL="http://192.168.1.38:5000";
+const API_URL = "http://" + window.location.hostname + ":5000";
 const params=new URLSearchParams(window.location.search);
 const allenamentoID=params.get("allenamento_id");
 fetch(API_URL+"/api/allenamenti/"+allenamentoID,{credentials:"include"}).then(function(risposta)

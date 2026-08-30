@@ -1,5 +1,5 @@
 "use strict";
-const API_URL="http://192.168.1.38:5000";
+const API_URL = "http://" + window.location.hostname + ":5000";
 fetch(API_URL+"/api/allenamenti",{method:"GET",credentials:"include"}).then(function(risposta)
 {
     return risposta.json().then(function(dati)
