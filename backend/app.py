@@ -32,6 +32,8 @@ def search_exercise(nome_esercizio,esercizi_svolti):
     for e in esercizi_svolti:
         if(e["nome"]==nome_esercizio):
             serie=e["serie"]
+            if not serie:
+                 return 1
             n=serie[-1]['numero']
             return n+1
 @app.route("/api/serie",methods=["POST"])
@@ -233,12 +235,12 @@ def get_allenamento_odierno_completo():
     if scheda_id is not None:
         scheda_trovata=schede_collection.find_one({"_id":ObjectId(scheda_id)})
     else:
-         scheda_trovata=None
+        scheda_trovata=None
     if scheda_trovata is not None:
         esercizi_base=scheda_trovata["esercizi_pianificati"]
         nome_scheda=scheda_trovata["nome"]
     else:
-        esercizi_base=list(esercizi_collection.find())
+        esercizi_base=[]
         nome_scheda="Allenamento libero"
     esercizi_uniti=[]
     for esercizio in esercizi_base:
@@ -247,7 +249,36 @@ def get_allenamento_odierno_completo():
             "target_rep":esercizio.get("target_rep"),
             "serie":trova_serie_svolte(esercizio["nome"],esercizi_svolti)
         })
+    eser_presenti=[e["nome"] for e in esercizi_uniti]
+    for eser_svolto in esercizi_svolti:
+         if eser_svolto["nome"] not in eser_presenti:
+              esercizi_uniti.append({"nome":eser_svolto["nome"],"target_rep":None,
+                "serie":eser_svolto["serie"]})
     return jsonify({"nome":nome_scheda,"nota":nota,"esercizi":esercizi_uniti})
+
+@app.route("/api/allenamenti/esercizio",methods=["POST"])
+def add_esercizio():
+    if "utente_id" not in session:
+              return jsonify({"messaggio":"No login"}),401
+    utente_id=session["utente_id"]
+    dati_ricevuti=request.get_json()
+    nome_esercizio=dati_ricevuti["esercizio"]
+    oggi=str(date.today())
+    esercizio_trovato=allenamenti_collection.find_one({"utente_id":utente_id,"data":oggi,"esercizi_svolti.nome":nome_esercizio})
+    if esercizio_trovato is not None:
+        return jsonify({"messaggio":"esercizio già presente"}),200
+    allenamenti_collection.update_one(
+            {"utente_id":utente_id,"data":oggi},
+            {
+            "$setOnInsert":{"utente_id":utente_id,"data":oggi,"esercizi_svolti":[]}
+            },
+            upsert=True
+    )
+    allenamenti_collection.update_one(
+        {"utente_id":utente_id,"data":oggi},
+        {"$push":{"esercizi_svolti":{"nome":nome_esercizio,"serie":[]}}}
+    )
+    return jsonify({"messaggio":"esercizio aggiunto con successo"}),201
 
 if __name__=="__main__":
     app.run(debug=True,host="0.0.0.0")

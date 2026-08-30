@@ -6,7 +6,7 @@ function creaBloccoEsercizio(esercizio){
     const h2=document.createElement("h2");
     h2.textContent=esercizio.nome;
     const pp=document.createElement("p");
-    pp.textContent="Obiettivo: "+esercizio.target_rep.join(", ");
+    pp.textContent=esercizio.target_rep?"Obiettivo: "+esercizio.target_rep.join(", "):"Nessun obiettivo";
     const ul=document.createElement("ul");
     esercizio.serie.forEach(function(e){
         const nuovaRiga=document.createElement("li");
@@ -158,5 +158,43 @@ btnSalvaNota.addEventListener("click",function(){
     ).then(function(risposta){
         console.log(risposta);
     });
+});
+
+const btnAggEser=document.getElementById("btn-agg-eser");
+btnAggEser.addEventListener("click",function(){
+    btnAggEser.disabled=true;
+    fetch(API_URL+"/api/esercizi",{credentials:"include"}).then(function(risposta){
+        return risposta.json();
+    }).then(function(dati){
+        const divAggEser=document.createElement("div");
+        divAggEser.classList.add("card");
+        let catalogo=dati;
+        const sel=document.createElement("select");
+        sel.classList.add("input-scheda");
+        catalogo.forEach(function(esercizio){
+            const opz=document.createElement("option");
+            opz.value=esercizio.nome;
+            opz.textContent=esercizio.nome;
+            sel.appendChild(opz);
+        });
+        divAggEser.appendChild(sel);
+        const btnConf=document.createElement("button");
+        btnConf.textContent="Conferma";
+        btnConf.classList.add("btn","btn-conferma");
+        btnConf.addEventListener("click",function(){
+            fetch(API_URL+"/api/allenamenti/esercizio",{
+                method:"POST",
+                credentials:"include",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({esercizio:sel.value})
+            }).then(function(){
+                window.location.reload();
+            });
+        });
+        divAggEser.appendChild(btnConf);
+        btnAggEser.parentNode.insertBefore(divAggEser,btnAggEser.nextSibling);
+        btnAggEser.disabled=false;
+    });
+    
 });
 
