@@ -144,3 +144,9 @@ h1,h2,h3
 {
     color: var(--colore-rosso-disco);
 }
+.riga-ex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--colore-acciaio);
+}

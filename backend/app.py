@@ -280,5 +280,31 @@ def add_esercizio():
     )
     return jsonify({"messaggio":"esercizio aggiunto con successo"}),201
 
+@app.route("/api/schede/<scheda_id>/remove",methods=["DELETE"])
+def remove_esercizio(scheda_id):
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"No login"}),401
+    utente_id=session["utente_id"]
+    dati_ricevuti=request.get_json()
+    nome_eser=dati_ricevuti["nome"]
+    oid=ObjectId(scheda_id)
+    risultato=schede_collection.update_one({"_id":oid,"utente_id":utente_id},
+    {
+         "$pull":{"esercizi_pianificati":{"nome":nome_eser}}
+    })
+    if risultato.modified_count==0:
+        return jsonify({"messaggio":"Esercizio non trovato"}),404
+    return jsonify({"messaggio":"Esercizio rimosso"}),200
+
+@app.route("/api/schede/<scheda_id>",methods=["DELETE"])
+def remove_scheda(scheda_id):
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"No login"}),401
+    utente_id=session["utente_id"]
+    oid=ObjectId(scheda_id)
+    risultato=schede_collection.delete_one({"_id":oid,"utente_id":utente_id})
+    if risultato.deleted_count==0:
+        return jsonify({"messaggio":"Scheda non trovata"}),404
+    return jsonify({"messaggio":"Scheda rimossa"}),200
 if __name__=="__main__":
     app.run(debug=True,host="0.0.0.0")

@@ -14,12 +14,20 @@ fetch(API_URL+"/api/schede",{
         {
             const schede_div=document.getElementById("lista-schede");
             risultato.dati.forEach(element => {
+                const riga=document.createElement("div");
+                riga.classList.add("riga-ex");
                 const ex=document.createElement("div");
                 ex.classList.add("riga-elenco");
                 ex.textContent=element["nome"];
                 ex.style.cursor="pointer";
                 ex.addEventListener("click",()=>selezioneScheda(element["id"]));
-                schede_div.appendChild(ex);
+                const btnModifica=document.createElement("button");
+                btnModifica.classList.add("btn","btn-primario");
+                btnModifica.textContent="Modifica";
+                btnModifica.addEventListener("click",()=>window.location.href="modifica_programma.html?scheda_id="+element["id"]);
+                riga.appendChild(ex);
+                riga.appendChild(btnModifica);
+                schede_div.appendChild(riga)
             });
         }
         else
