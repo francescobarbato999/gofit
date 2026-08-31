@@ -21,5 +21,5 @@ fetch(API_URL+"/api/allenamenti",{method:"GET",credentials:"include"}).then(func
         });
     }
     else
-        console.log("ERRORE");
+        window.location.href="login.html";
 });

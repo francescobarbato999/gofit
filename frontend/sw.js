@@ -1,21 +1,25 @@
 let cacheName="gofit";
-let filesToCache=["dettaglio_allenamento.html",
+let filesToCache=[
+"assets/icon-192.png",
+"assets/icon-512.png",
+"creaProgramma.html",
+"dettaglio_allenamento.html",
 "login.html",
+"modifica_programma.html",
 "programmi.html",
 "scheda_del_giorno.html",
 "script.js",
 "script_dettaglio.js",
 "script_login.js",
+"script_modifica_scheda.js",
+"script_nuova_scheda.js",
 "script_programmi.js",
 "script_storico.js",
 "storico.html",
 "style.css",
 "style_login.css",
-"manifest.json",
-"assets/icon-192.png",
-"assets/icon-512.png",
-"script_nuova_scheda.js",
-"creaProgramma.html"
+"sw.js",
+"sw_register.js"
 ]
 const API_URL = "http://" + self.location.hostname + ":5000";
 self.addEventListener("install",function(e){

@@ -1,5 +1,10 @@
 "use strict";
 const API_URL = "http://" + window.location.hostname + ":5000";
+
+fetch(API_URL+"/api/sessione",{credentials:"include"}).then(function(risposta){
+    if(risposta.ok)
+        window.location.href="programmi.html";
+});
 const switch_button=document.getElementById("switch");
 switch_button.addEventListener("click",function()
 {

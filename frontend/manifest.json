@@ -1,7 +1,7 @@
 {
     "name":"GoFit",
     "short_name":"GoFit",
-    "start_url":"/login.html",
+    "start_url":"/programmi.html",
     "display":"standalone",
     "background_color":"#14181C",
     "theme_color":"#14181C",

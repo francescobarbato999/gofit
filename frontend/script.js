@@ -118,6 +118,11 @@ function callListeners(){
 
 fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(function(risposta)
 {
+    if(!risposta.ok)
+    {
+        window.location.href="login.html";
+        return;
+    }
     return risposta.json();
 }).then(function(dati)
 {

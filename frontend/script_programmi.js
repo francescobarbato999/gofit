@@ -32,7 +32,7 @@ fetch(API_URL+"/api/schede",{
         }
         else
         {
-            console.log("Errore");
+            window.location.href="login.html";
         }
 });
 
@@ -77,4 +77,10 @@ function selezioneScheda(schedaId){
 const btnNuovaScheda=document.getElementById("btn-nuova-scheda");
 btnNuovaScheda.addEventListener("click",function(){
     window.location.href="creaProgramma.html"
+});
+
+const btnLogout=document.getElementById("btn-logout");
+btnLogout.addEventListener("click",function(){
+    fetch(API_URL+"/api/logout",{method:"POST",credentials:"include"})
+    .then(()=>window.location.href="login.html");
 });
