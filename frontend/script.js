@@ -1,5 +1,6 @@
 "use strict";
 const API_URL = "http://" + window.location.hostname + ":5000";
+window.addEventListener("online",svuotaCoda);
 function creaBloccoEsercizio(esercizio){
     const div=document.createElement("div");
     div.classList.add("esercizio");
@@ -103,15 +104,27 @@ function callListeners(){
                 },
                 body:JSON.stringify({
                     esercizio:nomeEsercizio,
-                    rep: inp[0].value,
-                    carico: inp[1].value
+                    rep: parseInt(inp[0].value),
+                    carico: parseFloat(inp[1].value)
                 }
                 )
             }).then(function(risposta)
-        {
-            console.log(risposta)
-        });
-        });
+            {
+                if(!risposta.ok)
+                {
+                    accodaAzione("POST","/api/serie",{esercizio:nomeEsercizio,rep: parseInt(inp[0].value),carico: parseFloat(inp[1].value)});
+                }
+            }).catch(function(error){
+                /*let azioni_offline=[];
+                azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
+                azioni_offline.push({method:"POST",url:"/api/serie",body:
+                {esercizio:nomeEsercizio,rep: parseInt(inp[0].value),carico: parseFloat(inp[1].value)
+                }});
+                localStorage.setItem("coda_azioni",JSON.stringify(azioni_offline));*/
+                accodaAzione("POST","/api/serie",{esercizio:nomeEsercizio,rep: parseInt(inp[0].value),carico: parseFloat(inp[1].value)});
+                });
+                
+            });
     });
 }
 
@@ -126,6 +139,16 @@ fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(fun
     return risposta.json();
 }).then(function(dati)
 {
+    localStorage.setItem("allenamento_oggi",JSON.stringify(dati));
+    creaPag(dati);   
+    svuotaCoda();
+}).catch(function(errore){
+    const datiSalvati=localStorage.getItem("allenamento_oggi");
+    if(datiSalvati)
+        creaPag(JSON.parse(datiSalvati));
+});
+
+function creaPag(dati){
     const name=document.getElementById("program");
     name.textContent=dati["nome"];
     const contenitore=document.querySelector(".lista-esercizi");
@@ -134,7 +157,7 @@ fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(fun
         contenitore.appendChild(blocco);
     });
     callListeners();
-});
+}
 
 fetch(API_URL+"/api/allenamenti/oggi",{credentials:"include"}).then(function(risposta){
     return risposta.json();
@@ -161,7 +184,12 @@ btnSalvaNota.addEventListener("click",function(){
         body:JSON.stringify({nota:notaInput.value})
     }
     ).then(function(risposta){
-        console.log(risposta);
+        if(!risposta.ok)
+        {
+            accodaAzione("POST","/api/allenamenti/nota",{nota:notaInput.value});
+        }
+    }).catch(function(errore){
+        accodaAzione("POST","/api/allenamenti/nota",{nota:notaInput.value});
     });
 });
 
@@ -192,7 +220,12 @@ btnAggEser.addEventListener("click",function(){
                 credentials:"include",
                 headers:{"Content-Type":"application/json"},
                 body:JSON.stringify({esercizio:sel.value})
-            }).then(function(){
+            }).then(function(risposta){
+                if(!risposta.ok)
+                    accodaAzione("POST","/api/allenamenti/esercizio",{esercizio:sel.value});
+                window.location.reload();
+            }).catch(function(errore){
+                accodaAzione("POST","/api/allenamenti/esercizio",{esercizio:sel.value});
                 window.location.reload();
             });
         });
@@ -203,3 +236,35 @@ btnAggEser.addEventListener("click",function(){
     
 });
 
+async function svuotaCoda() {
+    let azioni_offline=[];
+    azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
+    for(let i=0;i<azioni_offline.length;i++)
+    {
+        const action=azioni_offline[i];
+        try{
+            const risposta=await fetch(API_URL+action.url,{
+            credentials:"include",
+            method:action.method,
+            headers: { "Content-Type": "application/json" },
+            body:JSON.stringify(action.body)
+            });
+            if(!risposta.ok){
+                localStorage.setItem("coda_azioni",JSON.stringify(azioni_offline.slice(i)));
+                return;
+            }
+        }
+        catch(errore){
+            localStorage.setItem("coda_azioni",JSON.stringify(azioni_offline.slice(i)));
+            return;
+        }
+    }
+    localStorage.setItem("coda_azioni",JSON.stringify([]));
+}
+
+function accodaAzione(method,url,body){
+    let azioni_offline;
+    azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
+    azioni_offline.push({method:method,url:url,body:body});
+    localStorage.setItem("coda_azioni",JSON.stringify(azioni_offline));
+}

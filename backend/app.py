@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request,session
+from flask import Flask, jsonify, request,session,send_from_directory
 from flask_cors import CORS
 from pymongo import MongoClient
 from datetime import date
@@ -7,8 +7,10 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 from bson import ObjectId
+from datetime import timedelta
 
 app=Flask(__name__)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
 env_path=Path(__file__).resolve().parent/".env"
 load_dotenv(env_path)
 app.config["SECRET_KEY"]=os.environ.get("SECRET_KEY")
@@ -20,8 +22,16 @@ schede_collection=db["schede"]
 utenti_collection=db["utenti"]
 CORS(app,supports_credentials=True)
 
-
-
+'''
+@app.route("/")
+def index():
+    return send_from_directory(app.static_folder,"login.html")
+'''
+@app.route("/api/sessione")
+def check_session():
+    if "utente_id" not in session:
+        return jsonify({"loggato":False}),401
+    return jsonify({"loggato":True}),200
 @app.route("/api/esercizi")
 def get_esercizi():
     esercizi_db=list(esercizi_collection.find())
@@ -104,7 +114,7 @@ def get_schede():
     scheda=[{"id":str(s["_id"]),"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
     return jsonify(scheda)
 
-#due to changes this is dead code. Could it be useful in the future??
+
 @app.route("/api/schede/<scheda_id>")
 def get_scheda_singola(scheda_id):
     if "utente_id" not in session:
@@ -139,6 +149,7 @@ def login():
     if(check_password_hash(dati_cercati["password"],dati["password"])==False):
         return jsonify({"messaggio":"Errore"}),401
     session["utente_id"]=str(dati_cercati["_id"])
+    session.permanent = True
     return jsonify({"messaggio":"Login OK"}),200
 
 @app.route("/api/logout",methods=["POST"])

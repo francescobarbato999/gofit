@@ -1,13 +1,6 @@
 let cacheName="gofit";
 let filesToCache=[
-"assets/icon-192.png",
-"assets/icon-512.png",
-"creaProgramma.html",
-"dettaglio_allenamento.html",
-"login.html",
-"modifica_programma.html",
-"programmi.html",
-"scheda_del_giorno.html",
+"assets/icon-192.png","assets/icon-512.png","creaProgramma.html","dettaglio_allenamento.html","login.html","modifica_programma.html","programmi.html","scheda_del_giorno.html",
 "script.js",
 "script_dettaglio.js",
 "script_login.js",

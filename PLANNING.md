@@ -85,7 +85,7 @@ Typical flow (e.g., "add set"):
 
 ## Deployment plan (Phase 7)
 
-Target: a local Debian laptop acting as the server for the university presentation, reachable via **Tailscale** (private network, stable IP, no need to expose ports publicly or share the presentation Wi-Fi). On the laptop: Docker + MongoDB container (same setup as dev), Flask run via a production server (Gunicorn, not the Flask dev server), frontend served either as static files or directly by Flask. MongoDB data persists on the laptop's disk (not an ephemeral cloud filesystem), so SQLite-style data-loss-on-restart concerns don't apply here.
+Target: a tunnel made with Quicktunnel Cloudfare
 
 ---
 
@@ -98,8 +98,8 @@ Target: a local Debian laptop acting as the server for the university presentati
 - [x] Phase 5 — Frontend/backend connection (API)
 - [x] Phase 6 — Database (MongoDB via PyMongo; migrated from an earlier SQLite/SQLAlchemy prototype)
 - [x] Multi-user authentication (session-based login/registration/logout, data scoped by `utente_id`)
-- [ ] Frontend for Programs screen (list/select/create `schede`) — in progress
-- [ ] Daily Card loading exercises from a selected `scheda` instead of the full exercise list
-- [ ] History screen
+- [x] Frontend for Programs screen (list/select/create `schede`) — in progress
+- [x] Daily Card loading exercises from a selected `scheda` instead of the full exercise list
+- [x] History screen
 - [ ] Open Food Facts import
-- [ ] Phase 7 — Deployment (Debian laptop + Tailscale + Gunicorn)
+- [ ] Phase 7 — Deployment (Clsoudfare quicktunnel)
