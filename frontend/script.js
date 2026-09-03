@@ -157,6 +157,8 @@ fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(fun
 function creaPag(dati){
     const name=document.getElementById("program");
     name.textContent=dati["nome"];
+    const notaInp=document.getElementById("nota-input");
+    notaInp.value=dati["nota"];
     const contenitore=document.querySelector(".lista-esercizi");
     dati["esercizi"].forEach(function(esercizio){
         const blocco=creaBloccoEsercizio(esercizio);
@@ -164,14 +166,6 @@ function creaPag(dati){
     });
     callListeners();
 }
-
-fetch(API_URL+"/api/allenamenti/oggi",{credentials:"include"}).then(function(risposta){
-    return risposta.json();
-}).then(function(dati){
-    
-    const notaInp=document.getElementById("nota-input");
-    notaInp.value=dati["nota"];
-});
 const pulsante=document.getElementById("fine");
 pulsante.addEventListener("click",function()
 {

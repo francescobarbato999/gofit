@@ -186,6 +186,7 @@ def get_allenamento_singolo(allenamento_id):
     allenamento_ret={"id":str(allenamento_scelto["_id"]),"data":allenamento_scelto["data"],"esercizi_svolti":allenamento_scelto["esercizi_svolti"],"nota":allenamento_scelto.get("nota","")}
     return jsonify(allenamento_ret),200
 
+#dead code, could be useful later?
 @app.route("/api/allenamenti/oggi")
 def get_allenamento_odierno():
     if "utente_id" not in session:
