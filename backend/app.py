@@ -22,11 +22,6 @@ schede_collection=db["schede"]
 utenti_collection=db["utenti"]
 CORS(app,supports_credentials=True)
 
-'''
-@app.route("/")
-def index():
-    return send_from_directory(app.static_folder,"login.html")
-'''
 @app.route("/api/sessione")
 def check_session():
     if "utente_id" not in session:

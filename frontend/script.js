@@ -1,5 +1,6 @@
 "use strict";
 const API_URL = "http://" + window.location.hostname + ":5000";
+let id_timeout;
 window.addEventListener("online",svuotaCoda);
 function creaBloccoEsercizio(esercizio){
     const div=document.createElement("div");
@@ -34,6 +35,14 @@ function creaBloccoEsercizio(esercizio){
     const button2=document.createElement("button");
     button2.textContent="Conferma";
     button2.classList.add("btn","btn-conferma");
+    const button3=document.createElement("button");
+    button3.textContent="Annulla";
+    button3.classList.add("btn");
+    button3.addEventListener("click",function(){
+        form.style.display="none";
+        inp1.value="";
+        inp2.value="";
+    });
     const err=document.createElement("p");
     err.classList.add("errore");
 
@@ -45,6 +54,7 @@ function creaBloccoEsercizio(esercizio){
     form.appendChild(inp1);
     form.appendChild(inp2);
     form.appendChild(button2);
+    form.appendChild(button3);
     form.appendChild(err);
 
     return div;
@@ -115,12 +125,6 @@ function callListeners(){
                     accodaAzione("POST","/api/serie",{esercizio:nomeEsercizio,rep: parseInt(inp[0].value),carico: parseFloat(inp[1].value)});
                 }
             }).catch(function(error){
-                /*let azioni_offline=[];
-                azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
-                azioni_offline.push({method:"POST",url:"/api/serie",body:
-                {esercizio:nomeEsercizio,rep: parseInt(inp[0].value),carico: parseFloat(inp[1].value)
-                }});
-                localStorage.setItem("coda_azioni",JSON.stringify(azioni_offline));*/
                 accodaAzione("POST","/api/serie",{esercizio:nomeEsercizio,rep: parseInt(inp[0].value),carico: parseFloat(inp[1].value)});
                 });
                 
@@ -203,46 +207,74 @@ btnAggEser.addEventListener("click",function(){
         }
         return risposta.json();
     }).then(function(dati){
-        const divAggEser=document.createElement("div");
-        divAggEser.classList.add("card");
-        let catalogo=dati;
-        const sel=document.createElement("select");
-        sel.classList.add("input-scheda");
-        catalogo.forEach(function(esercizio){
-            const opz=document.createElement("option");
-            opz.value=esercizio.nome;
-            opz.textContent=esercizio.nome;
-            sel.appendChild(opz);
-        });
-        divAggEser.appendChild(sel);
-        const btnConf=document.createElement("button");
-        btnConf.textContent="Conferma";
-        btnConf.classList.add("btn","btn-conferma");
-        btnConf.addEventListener("click",function(){
-            fetch(API_URL+"/api/allenamenti/esercizio",{
-                method:"POST",
-                credentials:"include",
-                headers:{"Content-Type":"application/json"},
-                body:JSON.stringify({esercizio:sel.value})
-            }).then(function(risposta){
-                if(!risposta.ok)
-                    accodaAzione("POST","/api/allenamenti/esercizio",{esercizio:sel.value});
-                window.location.reload();
-            }).catch(function(errore){
-                accodaAzione("POST","/api/allenamenti/esercizio",{esercizio:sel.value});
-                window.location.reload();
-            });
-        });
-        divAggEser.appendChild(btnConf);
-        btnAggEser.parentNode.insertBefore(divAggEser,btnAggEser.nextSibling);
+        localStorage.setItem("catalogo_esercizi",JSON.stringify(dati));
+        buildFormEsercizio(dati);
         btnAggEser.disabled=false;
     }).catch(function(errore){
-        btnAggEser.disabled=false;
-        alert("Catalogo non disponibile offline");
+        const catalogoOffline=localStorage.getItem("catalogo_esercizi");
+        console.log(catalogoOffline);
+        if(catalogoOffline){
+            buildFormEsercizio(JSON.parse(catalogoOffline));
+            btnAggEser.disabled=false;
+        }
+        else
+        {
+            btnAggEser.disabled=false;
+            alert("Catalogo non disponibile offline");
+        }
     });
-    
 });
-
+function buildFormEsercizio(catalogo){
+     const divAggEser=document.createElement("div");
+    divAggEser.classList.add("card");
+    const sel=document.createElement("select");
+    sel.classList.add("input-scheda");
+    catalogo.forEach(function(esercizio){
+        const opz=document.createElement("option");
+        opz.value=esercizio.nome;
+        opz.textContent=esercizio.nome;
+        sel.appendChild(opz);
+    });
+    divAggEser.appendChild(sel);
+    const btnConf=document.createElement("button");
+    btnConf.textContent="Conferma";
+    btnConf.classList.add("btn","btn-conferma");
+    btnConf.addEventListener("click",function(){
+        fetch(API_URL+"/api/allenamenti/esercizio",{
+            method:"POST",
+            credentials:"include",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({esercizio:sel.value})
+        }).then(function(risposta){
+            if(!risposta.ok)
+            {
+                addEsercizioOffline(sel.value);
+                accodaAzione("POST","/api/allenamenti/esercizio",{esercizio:sel.value});
+            }
+            window.location.reload();
+        }).catch(function(errore){
+            addEsercizioOffline(sel.value);
+            accodaAzione("POST","/api/allenamenti/esercizio",{esercizio:sel.value});
+            window.location.reload();
+        });
+    });
+    const btnAnnulla=document.createElement("button");
+    btnAnnulla.textContent="-ANNULLA";
+    btnAnnulla.classList.add("btn","btn-secondario");
+    btnAnnulla.addEventListener("click",function(){
+        divAggEser.remove();
+        btnAggEser.disabled=false;
+    });
+    divAggEser.appendChild(btnConf);
+    divAggEser.appendChild(btnAnnulla);
+    btnAggEser.parentNode.insertBefore(divAggEser,btnAggEser.nextSibling);
+}
+function addEsercizioOffline(nomeEsercizio){
+    const datiSalvati=JSON.parse(localStorage.getItem("allenamento_oggi"));
+    if(!datiSalvati) return;
+    datiSalvati.esercizi.push({nome:nomeEsercizio,target_rep:null,serie:[]});
+    localStorage.setItem("allenamento_oggi",JSON.stringify(datiSalvati));
+}
 async function svuotaCoda() {
     let azioni_offline=[];
     azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
@@ -274,4 +306,15 @@ function accodaAzione(method,url,body){
     azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
     azioni_offline.push({method:method,url:url,body:body});
     localStorage.setItem("coda_azioni",JSON.stringify(azioni_offline));
+    mostraToast("Salvato offline, da sincronizzare");
+}
+
+function mostraToast(messaggio)
+{
+    
+    clearTimeout(id_timeout);
+    const p=document.getElementById("gestione-errore");
+    p.textContent=messaggio;
+    p.style.display="flex";
+    id_timeout=setTimeout(()=>p.style.display="none",2000);
 }
