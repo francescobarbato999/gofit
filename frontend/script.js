@@ -197,6 +197,10 @@ const btnAggEser=document.getElementById("btn-agg-eser");
 btnAggEser.addEventListener("click",function(){
     btnAggEser.disabled=true;
     fetch(API_URL+"/api/esercizi",{credentials:"include"}).then(function(risposta){
+        if(!risposta.ok)
+        {
+            throw new Error("Risposta non OK");
+        }
         return risposta.json();
     }).then(function(dati){
         const divAggEser=document.createElement("div");
@@ -232,6 +236,9 @@ btnAggEser.addEventListener("click",function(){
         divAggEser.appendChild(btnConf);
         btnAggEser.parentNode.insertBefore(divAggEser,btnAggEser.nextSibling);
         btnAggEser.disabled=false;
+    }).catch(function(errore){
+        btnAggEser.disabled=false;
+        alert("Catalogo non disponibile offline");
     });
     
 });
