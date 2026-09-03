@@ -150,6 +150,8 @@ fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(fun
     const datiSalvati=localStorage.getItem("allenamento_oggi");
     if(datiSalvati)
         creaPag(JSON.parse(datiSalvati));
+    else
+        mostraToastPermanente("Sei offline e non ci sono dati salvati. Connettiti per caricare l'allenamento.");
 });
 
 function creaPag(dati){
@@ -212,7 +214,6 @@ btnAggEser.addEventListener("click",function(){
         btnAggEser.disabled=false;
     }).catch(function(errore){
         const catalogoOffline=localStorage.getItem("catalogo_esercizi");
-        console.log(catalogoOffline);
         if(catalogoOffline){
             buildFormEsercizio(JSON.parse(catalogoOffline));
             btnAggEser.disabled=false;
@@ -317,4 +318,10 @@ function mostraToast(messaggio)
     p.textContent=messaggio;
     p.style.display="flex";
     id_timeout=setTimeout(()=>p.style.display="none",2000);
+}
+function mostraToastPermanente(messaggio)
+{
+    const p=document.getElementById("gestione-errore");
+    p.textContent=messaggio;
+    p.style.display="flex";
 }
