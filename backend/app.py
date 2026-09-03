@@ -8,8 +8,10 @@ import os
 from pathlib import Path
 from bson import ObjectId
 from datetime import timedelta
+from openfoodfacts import API,APIVersion
 
 app=Flask(__name__)
+off_api=API(user_agent="GoFit/1.0",version=APIVersion.v3)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
 env_path=Path(__file__).resolve().parent/".env"
 load_dotenv(env_path)
@@ -313,5 +315,50 @@ def remove_scheda(scheda_id):
     if risultato.deleted_count==0:
         return jsonify({"messaggio":"Scheda non trovata"}),404
     return jsonify({"messaggio":"Scheda rimossa"}),200
+
+def estrai_nome_marca(prod):
+    return {"nome":prod.get("product_name",""),"marca":prod.get("brands","")}
+
+@app.route("/api/alimenti/nome")
+def get_alimento():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"no login"}),401
+    nome=request.args.get("q")
+    res=off_api.product.text_search(nome,page_size=10)
+    ret=[]
+    for p in res["products"]:
+        alimento=estrai_nome_marca(p)
+        alimento["barcode"]=p.get("code")
+        ret.append(alimento)
+    return jsonify(ret)
+
+@app.route("/api/alimenti/<barcode>")
+def get_alimento_dettagliato(barcode):
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"no login"}),401
+    try:
+        prodotto = off_api.product.get(barcode,fields=[
+                "code",
+                "product_name",
+                "brands",
+                "nutriments"
+            ])
+        if prodotto is None:
+            return jsonify({"messaggio":"prodotto non trovato"}), 404
+        alimento=estrai_nome_marca(prodotto)
+        alimento["barcode"]=barcode
+        alimento["macro"]={
+            "calorie":prodotto["nutriments"].get("energy-kcal_100g"),
+            "proteine":prodotto["nutriments"].get("proteins_100g"),
+            "carboidrati":prodotto["nutriments"].get("carbohydrates_100g"),
+            "grassi":prodotto["nutriments"].get("fat_100g"),
+            "fibre":prodotto["nutriments"].get("fiber_100g")
+        }
+        return jsonify(alimento)
+
+    except Exception as e:
+        return jsonify({
+            "errore": str(e)
+        }), 500
 if __name__=="__main__":
     app.run(debug=True,host="0.0.0.0")
