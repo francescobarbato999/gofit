@@ -22,6 +22,7 @@ esercizi_collection=db["esercizi"]
 allenamenti_collection=db["allenamenti"]
 schede_collection=db["schede"]
 utenti_collection=db["utenti"]
+alimenti_collection=db["alimenti"]
 CORS(app,supports_credentials=True)
 
 @app.route("/api/sessione")
@@ -360,5 +361,46 @@ def get_alimento_dettagliato(barcode):
         return jsonify({
             "errore": str(e)
         }), 500
+
+@app.route("/api/alimenti/diario",methods=["POST"])
+def post_diario():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"No login"}),401
+    utente_id=session["utente_id"]
+    oggi=str(date.today())
+    dati_ricevuti=request.get_json()
+    nome=dati_ricevuti["nome"]
+    marca=dati_ricevuti["marca"]
+    barcode=dati_ricevuti["barcode"]
+    quantita=dati_ricevuti["quantita"]
+    macro=dati_ricevuti["macro"]
+    alimenti_collection.update_one(
+        {"data":oggi,"utente_id":utente_id},
+        {"$setOnInsert":{"data":oggi,"utente_id":utente_id,"alimenti_consumati":[]}},
+        upsert=True)
+    alimenti_collection.update_one(
+        {"data":oggi,"utente_id":utente_id},
+        {"$push":{"alimenti_consumati":{"nome":nome,"marca":marca,"barcode":barcode,"quantita":quantita,"macro":macro}}})
+    return jsonify({"messaggio":"Cibo inserito"}),201
+
+@app.route("/api/alimenti/oggi/totali")
+def get_totali_oggi():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"No login"}),401
+    utente_id=session["utente_id"]
+    oggi=str(date.today())
+    documento=alimenti_collection.find_one({"utente_id":utente_id,"data":oggi})
+    if documento is None:
+        return jsonify({"calorie":0,"carboidrati":0,"proteine":0,"grassi":0}),200
+    alimenti_consumati=documento["alimenti_consumati"]
+    cal=pro=carb=fat=0
+    for a in alimenti_consumati:
+        macro=a["macro"]
+        cal+=macro.get("calorie",0)
+        pro+=macro.get("proteine",0)
+        carb+=macro.get("carboidrati",0)
+        fat+=macro.get("grassi",0)
+    return jsonify({"calorie":cal,"proteine":pro,"carboidrati":carb,"grassi":fat}),200
+
 if __name__=="__main__":
     app.run(debug=True,host="0.0.0.0")

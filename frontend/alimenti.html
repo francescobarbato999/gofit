@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoFit</title>
+    <title>GoFit-Cibo</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,27 +11,28 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <h1 id="program"></h1>
+    <h1>Cibo</h1>
     <div class="card">
-        <textarea id="nota-input" placeholder="Note su questo allenamento..." class="input-scheda"></textarea>
-        <button id="btn-salva-nota" class="btn btn-primario">Salva nota</button>
+        <h2>Oggi hai assunto:</h2>
+        <p>Calorie: <span id="tot-calorie">0</span> kcal</p>
+        <p>Proteine: <span id="tot-proteine">0</span> g</p>
+        <p>Carboidrati: <span id="tot-carboidrati">0</span> g</p>
+        <p>Grassi: <span id="tot-grassi">0</span> g</p>
     </div>
-    <div class="lista-esercizi">
-        
-    </div>
-    <button id="btn-agg-eser" class="btn btn-primario">+Aggiungi esercizio</button>
-    <button id="fine" class="btn btn-primario">Fine allenamento</button>
-    <p id="messaggio-fine">Allenamento finito</p>
     <div class="card">
-        <p id="gestione-errore" style="display: none;"></p>
+        <input id="input-cibo" type="txt" placeholder="Cerca cibo...">
+        <button id="btn-cerca-cibo" class="btn btn-primario">Cerca</button>
+    </div>
+    <div class="card" id="lista-risultato">
+
     </div>
     <nav class="bottom-nav">
         <a href="programmi.html" class="nav-link">Programmi</a>
-        <a href="scheda_del_giorno.html" class="nav-link active">Allenamento</a>
+        <a href="scheda_del_giorno.html" class="nav-link">Allenamento</a>
         <a href="storico.html" class="nav-link">Storico</a>
-        <a href="alimenti.html" class="nav-link">Cibo</a>
+        <a href="alimenti.html" class="nav-link active">Cibo</a>
     </nav>
     <script src="sw_register.js"></script>
-    <script src="script.js"></script>
+    <script src="script_alimenti.js"></script>
 </body>
 </html>
