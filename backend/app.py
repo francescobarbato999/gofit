@@ -24,7 +24,7 @@ allenamenti_collection=db["allenamenti"]
 schede_collection=db["schede"]
 utenti_collection=db["utenti"]
 alimenti_collection=db["alimenti"]
-CORS(app,supports_credentials=True)
+CORS(app, supports_credentials=True, origins=["https://gofit-7xbm.onrender.com"])
 
 @app.route("/api/sessione")
 def check_session():
