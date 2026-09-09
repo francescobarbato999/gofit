@@ -16,8 +16,9 @@ app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
 env_path=Path(__file__).resolve().parent/".env"
 load_dotenv(env_path)
 app.config["SECRET_KEY"]=os.environ.get("SECRET_KEY")
-client=MongoClient("mongodb://localhost:27017/")
-db=client["gofit"]
+mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
+client = MongoClient(mongo_uri)
+db = client.get_database() if "MONGO_URI" in os.environ else client["gofit"]
 esercizi_collection=db["esercizi"]
 allenamenti_collection=db["allenamenti"]
 schede_collection=db["schede"]
