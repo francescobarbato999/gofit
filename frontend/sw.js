@@ -1,6 +1,12 @@
 let cacheName="gofit";
 let filesToCache=[
-"assets/icon-192.png","assets/icon-512.png","creaProgramma.html","dettaglio_allenamento.html","login.html","modifica_programma.html","programmi.html","scheda_del_giorno.html",
+"assets/icon-192.png",
+"assets/icon-512.png","creaProgramma.html",
+"dettaglio_allenamento.html",
+"login.html",
+"modifica_programma.html",
+"programmi.html",
+"scheda_del_giorno.html",
 "script.js",
 "script_dettaglio.js",
 "script_login.js",
@@ -12,9 +18,13 @@ let filesToCache=[
 "style.css",
 "style_login.css",
 "sw.js",
-"sw_register.js"
+"sw_register.js",
+"alimenti.html",
+"script_alimenti.js"
 ]
-const API_URL = "http://" + self.location.hostname + ":5000";
+const API_URL = (self.location.hostname === "localhost" || self.location.hostname.startsWith("192.168"))
+  ? "http://" + self.location.hostname + ":5000"
+  : "https://gofit-backend-2t9y.onrender.com";
 self.addEventListener("install",function(e){
     e.waitUntil(caches.open(cacheName).then(function(cache){
         return cache.addAll(filesToCache);

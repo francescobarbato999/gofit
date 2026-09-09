@@ -1,4 +1,6 @@
-const API_URL = "http://" + window.location.hostname + ":5000";
+const API_URL = (window.location.hostname === "localhost" || window.location.hostname.startsWith("192.168"))
+  ? "http://" + window.location.hostname + ":5000"
+  : "https://gofit-backend-2t9y.onrender.com";
 let totaliOggi={calorie:0,proteine:0,carboidrati:0,grassi:0};
 
 function mostraTotali(){

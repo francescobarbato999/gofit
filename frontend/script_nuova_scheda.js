@@ -1,4 +1,6 @@
-const API_URL = "http://" + window.location.hostname + ":5000";
+const API_URL = (window.location.hostname === "localhost" || window.location.hostname.startsWith("192.168"))
+  ? "http://" + window.location.hostname + ":5000"
+  : "https://gofit-backend-2t9y.onrender.com";
 let nuovaScheda={nome:"",esercizi_pianificati:[]};
 let catalogo=[];
 fetch(API_URL+"/api/esercizi",{credentials:"include"}).then(function(risposta){
