@@ -11,7 +11,7 @@ Personal app to log workouts, track weekly workouts, and view your workout histo
 - [x] Flask Backend
 - [x] Frontend/Backend Connection (API)
 - [x] Database
-- [] Refinement and Deployment# Workout Tracker
+- [x] Refinement and Deployment# Workout Tracker
 
 Personal app to log workouts, track weekly workouts, and view your workout history.
 

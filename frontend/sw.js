@@ -22,7 +22,7 @@ let filesToCache=[
 "alimenti.html",
 "script_alimenti.js"
 ]
-const API_URL = (self.location.hostname === "localhost" || self.location.hostname.startsWith("192.168"))
+const API_URL = (self.location.hostname === "localhost" || self.location.hostname.startsWith("192.168")||self.location.hostname==="127.0.0.1")
   ? "http://" + self.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
 self.addEventListener("install",function(e){

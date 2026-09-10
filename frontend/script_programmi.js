@@ -1,4 +1,4 @@
-const API_URL = (window.location.hostname === "localhost" || window.location.hostname.startsWith("192.168"))
+const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.startsWith("192.168"))
   ? "http://" + window.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
 fetch(API_URL+"/api/schede",{
@@ -13,28 +13,19 @@ fetch(API_URL+"/api/schede",{
 {
     if(risultato.ok)
         {
-            const schede_div=document.getElementById("lista-schede");
-            risultato.dati.forEach(element => {
-                const riga=document.createElement("div");
-                riga.classList.add("riga-ex");
-                const ex=document.createElement("div");
-                ex.classList.add("riga-elenco");
-                ex.textContent=element["nome"];
-                ex.style.cursor="pointer";
-                ex.addEventListener("click",()=>selezioneScheda(element["id"]));
-                const btnModifica=document.createElement("button");
-                btnModifica.classList.add("btn","btn-primario");
-                btnModifica.textContent="Modifica";
-                btnModifica.addEventListener("click",()=>window.location.href="modifica_programma.html?scheda_id="+element["id"]);
-                riga.appendChild(ex);
-                riga.appendChild(btnModifica);
-                schede_div.appendChild(riga)
-            });
+            localStorage.setItem("schede_allenamento",JSON.stringify(risultato.dati));
+            creaSchede(risultato.dati);
         }
         else
         {
             window.location.href="login.html";
         }
+}).catch(function(e){
+    const datiSalvati=localStorage.getItem("schede_allenamento");
+    if(datiSalvati)
+        creaSchede(JSON.parse(datiSalvati))
+    else
+        mostraToastPermanente("Sei offline e non ci sono dati salvati.");
 });
 
 function selezioneScheda(schedaId){
@@ -75,6 +66,26 @@ function selezioneScheda(schedaId){
     })
 }
 
+function creaSchede(dati){
+    const schede_div=document.getElementById("lista-schede");
+    dati.forEach(element => {
+        const riga=document.createElement("div");
+        riga.classList.add("riga-ex");
+        const ex=document.createElement("div");
+        ex.classList.add("riga-elenco");
+        ex.textContent=element["nome"];
+        ex.style.cursor="pointer";
+        ex.addEventListener("click",()=>selezioneScheda(element["id"]));
+        const btnModifica=document.createElement("button");
+        btnModifica.classList.add("btn","btn-primario");
+        btnModifica.textContent="Modifica";
+        btnModifica.addEventListener("click",()=>window.location.href="modifica_programma.html?scheda_id="+element["id"]);
+        riga.appendChild(ex);
+        riga.appendChild(btnModifica);
+        schede_div.appendChild(riga)
+    });
+}
+
 const btnNuovaScheda=document.getElementById("btn-nuova-scheda");
 btnNuovaScheda.addEventListener("click",function(){
     window.location.href="creaProgramma.html"
@@ -85,3 +96,9 @@ btnLogout.addEventListener("click",function(){
     fetch(API_URL+"/api/logout",{method:"POST",credentials:"include"})
     .then(()=>window.location.href="login.html");
 });
+function mostraToastPermanente(messaggio)
+{
+    const p=document.getElementById("gestione-errore");
+    p.textContent=messaggio;
+    p.style.display="flex";
+}

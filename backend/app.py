@@ -15,10 +15,11 @@ off_api=API(user_agent="GoFit/1.0",version=APIVersion.v3)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=365)
 env_path=Path(__file__).resolve().parent/".env"
 load_dotenv(env_path)
+is_prod=os.environ.get("RENDER") is not None
 app.config["SECRET_KEY"]=os.environ.get("SECRET_KEY")
-app.config["SESSION_COOKIE_SAMESITE"] = "None"
-app.config["SESSION_COOKIE_SECURE"] = True
-app.config["SESSION_COOKIE_PARTITIONED"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "None" if is_prod else "Lax"
+app.config["SESSION_COOKIE_SECURE"] = is_prod
+app.config["SESSION_COOKIE_PARTITIONED"] = is_prod
 mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
 client = MongoClient(mongo_uri)
 db = client.get_database() if "MONGO_URI" in os.environ else client["gofit"]
@@ -27,7 +28,8 @@ allenamenti_collection=db["allenamenti"]
 schede_collection=db["schede"]
 utenti_collection=db["utenti"]
 alimenti_collection=db["alimenti"]
-CORS(app, supports_credentials=True, origins=["https://gofit-7xbm.onrender.com"])
+CORS(app, supports_credentials=True, origins=["https://gofit-7xbm.onrender.com","http://localhost:3000",
+    "http://127.0.0.1:3000"])
 
 @app.route("/api/sessione")
 def check_session():

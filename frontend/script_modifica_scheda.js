@@ -1,6 +1,6 @@
 const params = new URLSearchParams(window.location.search);
 const schedaId = params.get("scheda_id");
-const API_URL = (window.location.hostname === "localhost" || window.location.hostname.startsWith("192.168"))
+const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.startsWith("192.168"))
   ? "http://" + window.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
 fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(risposta){

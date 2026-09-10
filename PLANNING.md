@@ -78,7 +78,7 @@ Typical flow (e.g., "add set"):
 
 - **Post-workout summary**: a completed session card showing total duration and a compact list of exercises/sets performed (richer version of the History screen)
 - **Statistics section**: charts/trends on progress over time (explicitly out of scope for MVP)
-- **Nutrition**: import a filtered subset of the Open Food Facts MongoDB dump (same Docker container, separate database) — not yet started
+- **Nutrition**: using OpenFoodFacts' API  
 - Considered and explicitly excluded for now: session start/end time, body weight tracking per session, offline-first with sync (would need real conflict handling; local-server-with-Tailscale approach chosen instead for the deployment scenario)
 
 ---
@@ -101,5 +101,5 @@ Target: a tunnel made with Quicktunnel Cloudfare
 - [x] Frontend for Programs screen (list/select/create `schede`) — in progress
 - [x] Daily Card loading exercises from a selected `scheda` instead of the full exercise list
 - [x] History screen
-- [ ] Open Food Facts import
-- [ ] Phase 7 — Deployment (Clsoudfare quicktunnel)
+- [x] Open Food Facts import
+- [x] Phase 7 — Deployment MongoDb Atlas for DB + Render Static Site for frontend + Render Web Service for backend 
