@@ -9,6 +9,7 @@ from pathlib import Path
 from bson import ObjectId
 from datetime import timedelta
 from openfoodfacts import API,APIVersion
+from google import genai
 
 app=Flask(__name__)
 off_api=API(user_agent="GoFit/1.0",version=APIVersion.v3)
@@ -21,8 +22,8 @@ app.config["SESSION_COOKIE_SAMESITE"] = "None" if is_prod else "Lax"
 app.config["SESSION_COOKIE_SECURE"] = is_prod
 app.config["SESSION_COOKIE_PARTITIONED"] = is_prod
 mongo_uri = os.environ.get("MONGO_URI", "mongodb://localhost:27017/")
-client = MongoClient(mongo_uri)
-db = client.get_database() if "MONGO_URI" in os.environ else client["gofit"]
+mongo_client = MongoClient(mongo_uri)
+db = mongo_client.get_database() if "MONGO_URI" in os.environ else mongo_client["gofit"]
 esercizi_collection=db["esercizi"]
 allenamenti_collection=db["allenamenti"]
 schede_collection=db["schede"]
@@ -30,12 +31,20 @@ utenti_collection=db["utenti"]
 alimenti_collection=db["alimenti"]
 CORS(app, supports_credentials=True, origins=["https://gofit-7xbm.onrender.com","http://localhost:3000",
     "http://127.0.0.1:3000"])
+google_client=genai.Client()
+SYSTEM_INSTRUCTION = """
+Sei un Personal Trainer virtuale esperto, motivante e attento alla sicurezza.
+Fornisci consigli brevi, diretti e chiari (massimo 3-4 frasi o punti elenco).
+Adatta le risposte alla scheda o ai dati dell'utente forniti nel contesto.
+Non fornire mai diagnosi o consigli medici.
+"""
 
 @app.route("/api/sessione")
 def check_session():
     if "utente_id" not in session:
         return jsonify({"loggato":False}),401
     return jsonify({"loggato":True}),200
+
 @app.route("/api/esercizi")
 def get_esercizi():
     esercizi_db=list(esercizi_collection.find())
@@ -407,6 +416,30 @@ def get_totali_oggi():
         carb+=macro.get("carboidrati",0)
         fat+=macro.get("grassi",0)
     return jsonify({"calorie":cal,"proteine":pro,"carboidrati":carb,"grassi":fat}),200
+
+@app.route("/api/coach",methods=["POST"])
+def ask_coach():
+    if "utente_id" not in session:
+        return jsonify({"messaggio":"No login"}),401
+    dati_ricevuti=request.get_json()
+    history=dati_ricevuti.get("history",[])
+
+    if not history:
+        return jsonify({"messaggio":"History vuoto"}),400
+    try:
+        respone=google_client.models.generate_content(
+            model="gemini-3.1-flash-lite",
+            config={
+                "system_instruction":SYSTEM_INSTRUCTION,
+                "temperature":0.7
+            },
+            contents=history
+        )
+        return jsonify({"risposta":respone.text})
+    except Exception as e:
+        print(e)
+        return jsonify({"errore":"coach non disponibile"}),500
+
 
 if __name__=="__main__":
     app.run(debug=True,host="0.0.0.0")
