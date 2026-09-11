@@ -2,30 +2,31 @@
 <html lang="it">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>GoFit-Programmi</title>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>GoFit-Coach</title>
         <link rel="stylesheet" href="style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,100..900&family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-        <link rel="manifest" href="manifest.json">
+        <link rel="manifest" href="manifest.json"> 
     </head>
     <body>
-        <h1>I tuoi programmi</h1>
-        <div id="lista-schede">
-
+        <h1>Coach Virtuale</h1>
+        <div class="card">
+            <h2>Chiede all'AI</h2>
+            <div id="chat-area"></div>
+            <textarea id="question-area"></textarea>
+            <button id="ask-button">Chiedi</button>
         </div>
-        <button class="btn btn-primario" id="btn-nuova-scheda">+Nuova Scheda</button>
         <p id="gestione-errore" style="display: none;"></p>
-        <button class="btn btn-secondario" id="btn-logout">LOGOUT</button>
         <nav class="bottom-nav">
-            <a href="programmi.html" class="nav-link active">Programmi</a>
+            <a href="programmi.html" class="nav-link">Programmi</a>
             <a href="scheda_del_giorno.html" class="nav-link">Allenamento</a>
             <a href="storico.html" class="nav-link">Storico</a>
             <a href="alimenti.html" class="nav-link">Cibo</a>
-            <a href="coach.html" class="nav-link">Coach</a>
+            <a href="coach.html" class="nav-link active">Coach</a>
         </nav>
         <script src="sw_register.js"></script>
-        <script src="script_programmi.js"></script>
+        <script src="script_coach.js"></script>
     </body>
 </html>
