@@ -6,6 +6,7 @@ fetch(API_URL+"/api/sessione",{credentials:"include"}).then(function(risposta){
     if(!risposta.ok)
         window.location.href="login.html";
 });
+//chat History because AI needs the whole chat to know the context
 const chatHistory=[];
 const button=document.getElementById("ask-button");
 button.addEventListener("click",function(){
@@ -14,6 +15,7 @@ button.addEventListener("click",function(){
     question.value="";
     if(value.trim()==="")
         return;
+    //user's question has Role=USER
     chatHistory.push({"role":"user","parts":[{"text":value}]});
     const chatMessage=document.createElement("p");
     chatMessage.textContent=value;
@@ -31,6 +33,7 @@ button.addEventListener("click",function(){
     }).then(function(risultato){
         if(risultato.ok)
         {
+            //user's question has Role=MODEL
             chatHistory.push({"role":"model","parts":[{"text":risultato.dati.risposta}]});
             const answer=document.createElement("p");
             answer.textContent=risultato.dati.risposta;

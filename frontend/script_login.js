@@ -2,10 +2,12 @@ const API_URL = (window.location.hostname === "localhost" || window.location.hos
   ? "http://" + window.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
 
+//if already logged-in skip this page
 fetch(API_URL+"/api/sessione",{credentials:"include"}).then(function(risposta){
     if(risposta.ok)
         window.location.href="programmi.html";
 });
+//switch from sign-in to log-in
 const switch_button=document.getElementById("switch");
 switch_button.addEventListener("click",function()
 {

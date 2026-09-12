@@ -1,8 +1,11 @@
+
 const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.startsWith("192.168"))
   ? "http://" + window.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
+// all API_URL need in every script need this ternary operator to check whether if u are on prod or on dev
 let totaliOggi={calorie:0,proteine:0,carboidrati:0,grassi:0};
 
+//this function just shows all user's macros, called on fetch
 function mostraTotali(){
     document.getElementById("tot-calorie").textContent=totaliOggi.calorie.toFixed(1);
     document.getElementById("tot-proteine").textContent=totaliOggi.proteine.toFixed(1);
@@ -10,6 +13,7 @@ function mostraTotali(){
     document.getElementById("tot-grassi").textContent=totaliOggi.grassi.toFixed(1);
 }
 
+//fetch to get total macros conmsumed by user
 fetch(API_URL+"/api/alimenti/oggi/totali",{credentials:"include"}).then(function(risposta){
     if(!risposta.ok)
         return;
@@ -23,7 +27,11 @@ fetch(API_URL+"/api/alimenti/oggi/totali",{credentials:"include"}).then(function
     console.log(errore);
 })
 
-
+/* 
+this event listener REALLY needs a refactor. It search foods, select a food from a list and adds to user's total.
+Bad code, at least 3 different func are needed there but im too lazy to refactor a working code.
+if it ain't broke don't fix it! 
+*/
 const btnCercaCibo=document.getElementById("btn-cerca-cibo");
 btnCercaCibo.addEventListener("click",function(){
     const inputCibo=document.getElementById("input-cibo");

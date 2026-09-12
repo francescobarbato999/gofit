@@ -3,6 +3,7 @@ const API_URL = (window.location.hostname === "localhost" || window.location.hos
   : "https://gofit-backend-2t9y.onrender.com";
 let nuovaScheda={nome:"",esercizi_pianificati:[]};
 let catalogo=[];
+//retrieve from db all exercises that can be inserted in a workout
 fetch(API_URL+"/api/esercizi",{credentials:"include"}).then(function(risposta){
     return risposta.json();
 }).then(function(dati){
@@ -33,6 +34,9 @@ const annulla=document.createElement("button");
 annulla.classList.add("btn","btn-secondario");
 annulla.textContent="-Annulla";
 formNuovaScheda.appendChild(annulla);
+//above lines just build the html page. could it be done in html? definetely. am i going to change it? probably no
+
+//add a new exercises to created plan
 btnNuovoEsercizio.addEventListener("click",function()
 {
     btnNuovoEsercizio.disabled=true;
@@ -70,6 +74,7 @@ btnNuovoEsercizio.addEventListener("click",function()
         repTemp.push(Number(repVal));
         inpNumRep.value=0;
     });
+    //cancel the add new exercise operation
     const annullaNuovoEse=document.createElement("button");
     annullaNuovoEse.classList.add("btn","btn-secondario");
     annullaNuovoEse.textContent="-Annulla esercizio";
@@ -84,7 +89,7 @@ btnNuovoEsercizio.addEventListener("click",function()
     salvaNuovoEse.textContent="+Salva esercizio";
     const errNuovoEse=document.createElement("p");
     errNuovoEse.classList.add("errore");
-    
+    //add the new exercise to new plan
     salvaNuovoEse.addEventListener("click",function(){
         if(selectEser.value=="" || repTemp.length===0)
         {
@@ -124,6 +129,7 @@ annulla.addEventListener("click",function(){
 const errNuovaScheda=document.createElement("p");
 errNuovaScheda.classList.add("errore");
 formNuovaScheda.appendChild(errNuovaScheda);
+//finally saves the new plan to db
 salva.addEventListener("click",function(){
     if(inputScheda.value===""|| nuovaScheda.esercizi_pianificati.length===0)
     {

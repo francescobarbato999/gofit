@@ -1,6 +1,11 @@
 const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.startsWith("192.168"))
   ? "http://" + window.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
+
+/**as usual if everything work save in cache for when u r offline and show to user
+ * 
+ * if something goes wrong with fetch get from cache and show
+ */
 fetch(API_URL+"/api/allenamenti",{method:"GET",credentials:"include"}).then(function(risposta)
 {
     return risposta.json().then(function(dati)

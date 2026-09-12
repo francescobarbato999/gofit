@@ -34,6 +34,7 @@ fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(ris
             btnEliminaEsercizio.classList.add("btn","btn-primario");
             btnEliminaEsercizio.textContent="-Elimina esercizio";
             btnEliminaEsercizio.addEventListener("click",function(){
+                //remove exercise from plan
                 fetch(API_URL+"/api/schede/"+schedaId+"/remove",
                 {
                     credentials:"include",
@@ -63,6 +64,7 @@ fetch(API_URL+"/api/schede/"+schedaId,{credentials:"include"}).then(function(ris
         console.log("err");
     }
 })
+//delete the plan from db
 const btnEliminaScheda=document.getElementById("elimina-scheda");
 btnEliminaScheda.addEventListener("click",function(){
     fetch(API_URL+"/api/schede/"+schedaId,

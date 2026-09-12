@@ -39,18 +39,21 @@ Adatta le risposte alla scheda o ai dati dell'utente forniti nel contesto.
 Non fornire mai diagnosi o consigli medici.
 """
 
+#check if an user is in logged-in
 @app.route("/api/sessione")
 def check_session():
     if "utente_id" not in session:
         return jsonify({"loggato":False}),401
     return jsonify({"loggato":True}),200
 
+#get every exercise from DB
 @app.route("/api/esercizi")
 def get_esercizi():
     esercizi_db=list(esercizi_collection.find())
     esercizi = [{"nome":e["nome"],"gruppo_muscolare":e["gruppo_muscolare"]} for e in esercizi_db]
     return jsonify(esercizi)
 
+#find
 def search_exercise(nome_esercizio,esercizi_svolti):
     for e in esercizi_svolti:
         if(e["nome"]==nome_esercizio):
@@ -59,6 +62,8 @@ def search_exercise(nome_esercizio,esercizi_svolti):
                  return 1
             n=serie[-1]['numero']
             return n+1
+
+#insert a Serie in a found exercise or create a new exercise in current workout
 @app.route("/api/serie",methods=["POST"])
 def post_serie():
     if "utente_id" not in session:
@@ -101,6 +106,7 @@ def post_serie():
                 )
     return jsonify({"messaggio":"Serie aggiunta"}),201
 
+#post a new Scheda (plan) in user's Schede (plans)
 @app.route("/api/schede",methods=["POST"])
 def post_schede():
     if "utente_id" not in session:
@@ -118,6 +124,7 @@ def post_schede():
     )
     return jsonify({"messaggio":"scheda aggiunta"}),201
 
+#get all users Schede(plans)
 @app.route("/api/schede")
 def get_schede():
     if "utente_id" not in session:
@@ -127,7 +134,7 @@ def get_schede():
     scheda=[{"id":str(s["_id"]),"nome":s["nome"],"esercizi_pianificati":s["esercizi_pianificati"]} for s in schede_db]
     return jsonify(scheda)
 
-
+#get the Scheda (plan) with specified id
 @app.route("/api/schede/<scheda_id>")
 def get_scheda_singola(scheda_id):
     if "utente_id" not in session:
@@ -139,7 +146,7 @@ def get_scheda_singola(scheda_id):
     return jsonify(scheda_ret),200
 
 
-                
+#sign-in
 @app.route("/api/registrazione",methods=["POST"])
 def registrazione():
     dati=request.get_json()
@@ -152,6 +159,7 @@ def registrazione():
     utenti_collection.insert_one({"username":username,"password":hash_pass})
     return jsonify({"messaggio":"registrazione effettuata con successo"}),201
 
+#login
 @app.route("/api/login",methods=["POST"])
 def login():
     dati=request.get_json()
@@ -165,11 +173,13 @@ def login():
     session.permanent = True
     return jsonify({"messaggio":"Login OK"}),200
 
+#logout
 @app.route("/api/logout",methods=["POST"])
 def logout():
     session.pop("utente_id",None)
     return jsonify({"messaggio":"Logout OK"}),200
 
+#post a note in the current workout
 @app.route("/api/allenamenti/nota",methods=["POST"])
 def post_nota():
     if "utente_id" not in session:
@@ -185,6 +195,7 @@ def post_nota():
         )
     return jsonify({"messaggio":"Nota salvata"}),200
 
+#get workout history
 @app.route("/api/allenamenti")
 def get_allenamenti():
     if "utente_id" not in session:
@@ -194,6 +205,7 @@ def get_allenamenti():
     allenamenti=[{"id":str(a["_id"]),"data":a["data"]} for a in allenamenti_db]
     return jsonify(allenamenti)
 
+#get a single wokrout from history
 @app.route("/api/allenamenti/<allenamento_id>")
 def get_allenamento_singolo(allenamento_id):
     if "utente_id" not in session:
@@ -218,6 +230,7 @@ def get_allenamento_odierno():
     "scheda_id":allenamento_scelto.get("scheda_id")}
     return jsonify(allenamento_ret),200
 
+#post today's workout
 @app.route("/api/allenamenti/scheda",methods=["POST"])
 def post_scheda_oggi():
     if "utente_id" not in session:
@@ -247,6 +260,7 @@ def trova_serie_svolte(nome_es,es_svolti):
             return e["serie"]
     return []
 
+#get today's workout complete (planned exercises and extra exercises)
 @app.route("/api/allenamenti/oggi/completo")
 def get_allenamento_odierno_completo():
     if "utente_id" not in session:
@@ -281,6 +295,7 @@ def get_allenamento_odierno_completo():
                 "serie":eser_svolto["serie"]})
     return jsonify({"nome":nome_scheda,"nota":nota,"esercizi":esercizi_uniti})
 
+#add an exercise to today's workout
 @app.route("/api/allenamenti/esercizio",methods=["POST"])
 def add_esercizio():
     if "utente_id" not in session:
@@ -305,6 +320,7 @@ def add_esercizio():
     )
     return jsonify({"messaggio":"esercizio aggiunto con successo"}),201
 
+#remove an exercise from today's workout
 @app.route("/api/schede/<scheda_id>/remove",methods=["DELETE"])
 def remove_esercizio(scheda_id):
     if "utente_id" not in session:
@@ -321,6 +337,7 @@ def remove_esercizio(scheda_id):
         return jsonify({"messaggio":"Esercizio non trovato"}),404
     return jsonify({"messaggio":"Esercizio rimosso"}),200
 
+#remove a Scheda (plan) from user's plans
 @app.route("/api/schede/<scheda_id>",methods=["DELETE"])
 def remove_scheda(scheda_id):
     if "utente_id" not in session:
@@ -335,6 +352,7 @@ def remove_scheda(scheda_id):
 def estrai_nome_marca(prod):
     return {"nome":prod.get("product_name",""),"marca":prod.get("brands","")}
 
+#get foods' specific from their name
 @app.route("/api/alimenti/nome")
 def get_alimento():
     if "utente_id" not in session:
@@ -348,6 +366,7 @@ def get_alimento():
         ret.append(alimento)
     return jsonify(ret)
 
+#when user clicks on a specific food this gets all its macro
 @app.route("/api/alimenti/<barcode>")
 def get_alimento_dettagliato(barcode):
     if "utente_id" not in session:
@@ -377,6 +396,7 @@ def get_alimento_dettagliato(barcode):
             "errore": str(e)
         }), 500
 
+#adds a food to daily eaten foods
 @app.route("/api/alimenti/diario",methods=["POST"])
 def post_diario():
     if "utente_id" not in session:
@@ -398,6 +418,7 @@ def post_diario():
         {"$push":{"alimenti_consumati":{"nome":nome,"marca":marca,"barcode":barcode,"quantita":quantita,"macro":macro}}})
     return jsonify({"messaggio":"Cibo inserito"}),201
 
+#get total daily macros
 @app.route("/api/alimenti/oggi/totali")
 def get_totali_oggi():
     if "utente_id" not in session:
@@ -417,6 +438,7 @@ def get_totali_oggi():
         fat+=macro.get("grassi",0)
     return jsonify({"calorie":cal,"proteine":pro,"carboidrati":carb,"grassi":fat}),200
 
+#api calls to gemini ai. don't forget that it's stateless so u need to get chat history every time from frontend
 @app.route("/api/coach",methods=["POST"])
 def ask_coach():
     if "utente_id" not in session:
@@ -442,4 +464,4 @@ def ask_coach():
 
 
 if __name__=="__main__":
-    app.run(debug=True,host="0.0.0.0")
+    app.run(debug=False,host="0.0.0.0")

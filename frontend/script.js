@@ -1,8 +1,14 @@
+/**this whole code was made when i started using JS. I already did some refactor but to me
+ * it just looks ugly.
+ */
+
 const API_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname.startsWith("192.168"))
   ? "http://" + window.location.hostname + ":5000"
   : "https://gofit-backend-2t9y.onrender.com";
 let id_timeout;
+//when user gets online exercises that are stored in cache get finally sent to backend
 window.addEventListener("online",svuotaCoda);
+
 function creaBloccoEsercizio(esercizio){
     const div=document.createElement("div");
     div.classList.add("esercizio");
@@ -107,6 +113,7 @@ function callListeners(){
             lista.appendChild(nuovaRiga);
             form_serie.style.display="none";
             const nomeEsercizio=blocco.querySelector("h2").textContent;
+            /**post serie to backend, if somethjing goes wrong cache this and wait SvuotaCoda() */
             fetch(API_URL+"/api/serie",{
                 method:"POST",
                 credentials:"include",
@@ -133,7 +140,8 @@ function callListeners(){
     });
 }
 
-
+/*get full today's workout. Sent a non-logged user to login. if everything goes right cache, else get from cache
+if cache empty the show error*/
 fetch(API_URL+"/api/allenamenti/oggi/completo",{credentials:"include"}).then(function(risposta)
 {
     if(!risposta.ok)
@@ -265,12 +273,14 @@ function buildFormEsercizio(catalogo){
     divAggEser.appendChild(btnAnnulla);
     btnAggEser.parentNode.insertBefore(divAggEser,btnAggEser.nextSibling);
 }
+//add an exercise to ur current workout when u r offline
 function addEsercizioOffline(nomeEsercizio){
     const datiSalvati=JSON.parse(localStorage.getItem("allenamento_oggi"));
     if(!datiSalvati) return;
     datiSalvati.esercizi.push({nome:nomeEsercizio,target_rep:null,serie:[]});
     localStorage.setItem("allenamento_oggi",JSON.stringify(datiSalvati));
 }
+/**get the queue of action performed and execute when u get online*/
 async function svuotaCoda() {
     let azioni_offline=[];
     azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");
@@ -278,6 +288,7 @@ async function svuotaCoda() {
     {
         const action=azioni_offline[i];
         try{
+            //action url is retrievd from queue, and it's used to send the action to the right route
             const risposta=await fetch(API_URL+action.url,{
             credentials:"include",
             method:action.method,
@@ -296,7 +307,7 @@ async function svuotaCoda() {
     }
     localStorage.setItem("coda_azioni",JSON.stringify([]));
 }
-
+//enqueue an action, with its method, url to fetch and body
 function accodaAzione(method,url,body){
     let azioni_offline;
     azioni_offline=JSON.parse(localStorage.getItem("coda_azioni")||"[]");

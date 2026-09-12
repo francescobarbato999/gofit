@@ -17,6 +17,7 @@ fetch(API_URL+"/api/allenamenti/"+allenamentoID,{credentials:"include"}).then(fu
         const nota=document.getElementById("nota-allenamento");
         nota.textContent=risultato.dati["nota"];
         const contenitore=document.querySelector(".lista-esercizi");
+        //for each exercise done in a specified worokut build its own div
         risultato.dati["esercizi_svolti"].forEach(function(esercizio){
             const blocco=creaBloccoStorico(esercizio);
             contenitore.appendChild(blocco);
