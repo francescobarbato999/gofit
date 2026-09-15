@@ -1,5 +1,4 @@
 venv/
-schema_dati_app_allenamento_recall.html
 __pycache__/
 instance/
 *.db
