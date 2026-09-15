@@ -22,6 +22,8 @@ Personal app to log workouts, track weekly workouts, and view your workout histo
 - Daily Workout View with Planned Exercises
 - Real-time Recording of Sets (Reps, Load)
 - Past Workout History
+- Calories tracking
+- AI assistant
 
 ## Technology Stack
 
@@ -31,8 +33,8 @@ Personal app to log workouts, track weekly workouts, and view your workout histo
 
 ## How to Launch Locally
 
-_(Section to be completed as soon as the backend and frontend are ready)_
+1) pip install requirements.txt
+2) launch backend with python backend/app.py
+3) launch http server in frontend folder
+4) MongoDB is online on Atlas, but can be used locally with a docker container
 
-## Project Structure
-
-_(Section to be completed once the folder organization is finalized)_

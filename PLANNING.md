@@ -10,6 +10,8 @@ Personal app for recording workouts, following reusable training plans, and view
 2. As a user, I want to create a reusable training plan, so I can follow a consistent program and see my progress over time.
 3. As a user, I want to be able to modify the daily workout if a machine is unavailable, so I can adapt without losing the plan's structure.
 4. As a user, I want my data to be private and separate from other users' data.
+5. As a user, I want to track my daily macros
+6. As a user, I want assistance by an AI coach
 
 ## Data Model
 
@@ -21,6 +23,7 @@ Guiding principle: separate **planned** data (plan targets, always the same) fro
 | `esercizi` | Exercise catalog, shared across all users | `{_id, nome, gruppo_muscolare}` |
 | `schede` | A reusable training plan, owned by one user | `{_id, utente_id, nome, esercizi_pianificati: [{nome, target_rep: [int, ...]}]}` — `target_rep` holds one rep target per planned set (e.g. `[8, 8, 8, 6]`); the number of planned sets is simply its length, not stored separately |
 | `allenamenti` | One actual workout session (one per user per day), owned by one user | `{_id, utente_id, data, esercizi_svolti: [{nome, serie: [{numero, rep, carico}]}]}` |
+| `alimenti` | Food ate by user | `{_id, utente_id, alimenti_consumati:[{nome, marca, barcode, quantita, macro}]}` |
 
 **Key relationships**:
 - A `scheda` belongs to one user (`utente_id`) and embeds its `esercizi_pianificati`
@@ -46,24 +49,31 @@ Routes: `POST /api/registrazione`, `POST /api/login`, `POST /api/logout`. Fronte
 Single page, toggles between a login form and a registration form. On success, redirects to the Daily Card screen (or wherever the user's next step should be).
 
 ### 1. Programs (Programmi)
-List of the logged-in user's saved plans (`schede`), each selectable to start a workout, plus a way to create a new plan. Selecting a plan navigates to the Daily Card screen with the chosen plan's id passed as a URL query parameter (e.g. `scheda_del_giorno.html?scheda_id=...`).
+List of the logged-in user's saved plans (`schede`), each selectable to start a workout, plus a way to create a new plan. Selecting a plan navigates to the Daily Card screen.ò
 
 ### 2. Daily Card (Scheda del giorno)
 - List of exercises planned for the chosen plan (loaded via `scheda_id` from the URL, falling back to a flat exercise list if none is provided — current dev behavior)
 - For each exercise: name + list of sets already recorded in this session
-- Actions: **+ add set** (inline form, values filled from scratch, with validation), **next exercise**
+- Actions: **+ add set** (inline form, values filled from scratch, with validation), **+add exercise**
 
 ### 3. History
 - List of past workouts, by date
 - (No automatic comparisons/stats in the MVP — explicit future development)
 
+### 4. Food
+- Check daily consumed macros
+- Actions: **+add food**, **find food**
+
+## 5. AI coach
+- Ask AI for help
+- Actions: **ask AI**
 ---
 
 ## General Architecture
 
 - **Frontend** (HTML/CSS/JS): UI, collects input, updates the view, reads URL query params for navigation state (e.g. which plan was selected)
 - **Backend** (Flask): route-per-resource REST-ish API (`/api/esercizi`, `/api/schede`, `/api/serie`, `/api/registrazione`, `/api/login`, `/api/logout`), session-based auth, talks to MongoDB via PyMongo
-- **Database**: MongoDB running in a Docker container (`docker run ... --name mongodb -v $MONGODATA:/data/db -p 27017:27017 mongo`), data persisted via a bind-mounted `mongodata/` directory (excluded from Git)
+- **Database**: MongoDB running in MongoDB Atlas
 
 Typical flow (e.g., "add set"):
 1. JS collects rep/load from the inline form, validates non-empty input
@@ -74,18 +84,10 @@ Typical flow (e.g., "add set"):
 
 ---
 
-## Visual Reference / Future Developments
-
-- **Post-workout summary**: a completed session card showing total duration and a compact list of exercises/sets performed (richer version of the History screen)
-- **Statistics section**: charts/trends on progress over time (explicitly out of scope for MVP)
-- **Nutrition**: using OpenFoodFacts' API  
-- Considered and explicitly excluded for now: session start/end time, body weight tracking per session, offline-first with sync (would need real conflict handling; local-server-with-Tailscale approach chosen instead for the deployment scenario)
-
----
 
 ## Deployment plan (Phase 7)
 
-Target: a tunnel made with Quicktunnel Cloudfare
+Target: backend and frontend on Render, DB on MongoDB Atlas
 
 ---
 
